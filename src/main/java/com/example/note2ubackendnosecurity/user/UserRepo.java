@@ -1,4 +1,9 @@
 package com.example.note2ubackendnosecurity.user;
 
-public class UserRepo {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.UUID;
+
+public interface UserRepo extends JpaRepository <UserEntity, UUID>{
+
 }
