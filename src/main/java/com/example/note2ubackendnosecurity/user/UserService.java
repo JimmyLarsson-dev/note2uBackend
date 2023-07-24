@@ -10,16 +10,28 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
-    UserRepo repo;
-
+    private final UserRepo repo;
 
     public String register(String username, String password, String email) {
 
+        if(repo.findAll()
+                .stream()
+                .anyMatch(x -> x.getEmail().equals(email))){
+            return "email already exists!";
+        }
+
+        if(repo.findAll()
+                .stream()
+                .anyMatch(x -> x.getUsername().equals(username) )) {
+            return "user name already exists!";
+        }
+
         UserEntity user = new UserEntity(
                 UUID.randomUUID(),
+                email,
                 username,
-                password,
-                email);
+                password
+                );
 
         repo.save(user);
 
