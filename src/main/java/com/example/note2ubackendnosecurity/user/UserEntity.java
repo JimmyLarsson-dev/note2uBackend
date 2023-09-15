@@ -1,23 +1,33 @@
 package com.example.note2ubackendnosecurity.user;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import com.example.note2ubackendnosecurity.notes.NoteEntity;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class UserEntity {
 
     @Id
-    @Column(name = "id")
-    public UUID id;
-    public String email;
-    public String username;
-    public String password;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "user_id")
+    private UUID id;
+    private String email;
+    private String username;
+    private String password;
+    @ManyToMany
+    private List<NoteEntity> notes;
 
+    public UserEntity(String email, String username, String password, List<NoteEntity> notes) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.notes = notes;
+    }
 }

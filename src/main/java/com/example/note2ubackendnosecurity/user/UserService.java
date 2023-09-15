@@ -1,9 +1,13 @@
 package com.example.note2ubackendnosecurity.user;
 
+import com.example.note2ubackendnosecurity.notes.NoteEntity;
+import com.example.note2ubackendnosecurity.other.WelcomeNote;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -16,10 +20,11 @@ public class UserService {
     public String register(String username, String password, String email) {
 
         UserEntity user = new UserEntity(
-                UUID.randomUUID(),
+                email,
                 username,
                 password,
-                email);
+                List.of(new NoteEntity(WelcomeNote.welcomeLable, WelcomeNote.welcomeContent))
+        );
 
         repo.save(user);
 
