@@ -1,20 +1,20 @@
 package com.example.note2ubackendnosecurity.user;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
-@RequestMapping("/api/user/")
+@RequestMapping("/api/v1")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
 
-    @Autowired
-    UserService service;
+    private final UserService service;
 
-    @PostMapping("register")
-    public String register(@RequestBody String username, String password, String email) {
-        return service.register(username, password, email);
+    public UserController(UserService service) {
+        this.service = service;
     }
 
+    @PostMapping("/register")
+    public String register(@RequestHeader String password, @RequestHeader String email, @RequestBody String username) {
+        return service.register(username, password, email);
+    }
 }
