@@ -23,19 +23,19 @@ public class UserService {
                 .anyMatch(x -> x.getEmail().equals(email))){
             return "email already exists!";
         }
-
         if(repo.findAll()
                 .stream()
                 .anyMatch(x -> x.getUsername().equals(username) )) {
             return "user name already exists!";
         }
+        NoteEntity noteEntity = new NoteEntity(WelcomeNote.welcomeLable, WelcomeNote.welcomeContent);
 
         UserEntity user = new UserEntity(
                 email,
                 username,
                 password,
-                List.of(new NoteEntity(WelcomeNote.welcomeLable, WelcomeNote.welcomeContent))
-        );
+                List.of(noteEntity));
+
 
         repo.save(user);
 

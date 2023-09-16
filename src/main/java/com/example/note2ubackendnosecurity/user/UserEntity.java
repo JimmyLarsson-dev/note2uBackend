@@ -12,6 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
+@Table(name = "users")
 public class UserEntity {
 
     @Id
@@ -22,6 +23,9 @@ public class UserEntity {
     private String username;
     private String password;
     @ManyToMany
+    @JoinTable(name = "user_note", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "note_id"))
+    @Column(name = "note_id")
     private List<NoteEntity> notes;
 
     public UserEntity(String email, String username, String password, List<NoteEntity> notes) {

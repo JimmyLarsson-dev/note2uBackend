@@ -3,7 +3,7 @@ package com.example.note2ubackendnosecurity.user;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/user")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
 
@@ -14,7 +14,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestHeader String password, @RequestHeader String email, @RequestBody String username) {
+    public String register(@RequestBody String username, String password, String email) {
         return service.register(username, password, email);
     }
 }
