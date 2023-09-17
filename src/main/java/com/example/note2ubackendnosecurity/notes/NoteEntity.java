@@ -14,8 +14,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-//@RequiredArgsConstructor
-//@AllArgsConstructor
 @Table(name = "notes")
 public class NoteEntity {
 
@@ -23,9 +21,10 @@ public class NoteEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "note_id")
     UUID id;
-    String title;
-    String content;
-//    @Column(name = "user_id")
+
+    private String title;
+    private String content;
+
     @ManyToMany
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "userId")

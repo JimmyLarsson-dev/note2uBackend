@@ -38,6 +38,6 @@ public class UserService {
         NoteEntity noteEntity = new NoteEntity(WelcomeNote.welcomeLable, WelcomeNote.welcomeContent, user);
         user.setNotes(List.of(noteEntity));
         repo.save(user);
-        return "User created";
+        return user.getId().toString();
     }
 }
