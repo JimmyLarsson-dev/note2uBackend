@@ -3,7 +3,8 @@ package com.example.note2ubackendnosecurity.user;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,9 +24,8 @@ public class UserEntity {
     private String username;
     private String password;
     @ManyToMany
-    @JoinTable(name = "user_note", joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "note_id"))
-    @Column(name = "note_id")
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "note_id")
     private List<NoteEntity> notes;
 
     public UserEntity(String email, String username, String password, List<NoteEntity> notes) {

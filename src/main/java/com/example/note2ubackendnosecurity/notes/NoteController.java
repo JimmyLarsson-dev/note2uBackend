@@ -1,5 +1,6 @@
 package com.example.note2ubackendnosecurity.notes;
 
+import com.example.note2ubackendnosecurity.other.UserMissingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,8 +19,8 @@ public class NoteController {
     }
 
     @PostMapping("/createNote")
-    public String createNote(@RequestBody String title, String content) {
-        return noteService.createNote(title, content);
+    public String createNote(@RequestBody String title, String content, String userId) throws UserMissingException {
+        return noteService.createNote(title, content, userId);
     }
 
 }

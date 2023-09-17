@@ -14,7 +14,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody String username, String password, String email) {
-        return service.register(username, password, email);
+    public String register(@RequestBody RegisterRequest request) {
+        return service.register(request.getUsername(), request.getPassword(), request.getEmail());
     }
 }

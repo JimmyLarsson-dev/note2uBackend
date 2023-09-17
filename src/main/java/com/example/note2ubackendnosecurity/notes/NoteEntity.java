@@ -3,10 +3,9 @@ package com.example.note2ubackendnosecurity.notes;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,8 +13,9 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor
+//@RequiredArgsConstructor
+//@AllArgsConstructor
 @Table(name = "notes")
 public class NoteEntity {
 
@@ -25,13 +25,15 @@ public class NoteEntity {
     UUID id;
     String title;
     String content;
-    @Column(name = "user_id")
-    @ManyToMany(mappedBy = "notes", fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("notes")
+//    @Column(name = "user_id")
+    @ManyToMany
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "userId")
     private List<UserEntity> users;
 
-    public NoteEntity(String title, String content) {
+    public NoteEntity(String title, String content, UserEntity user) {
         this.title = title;
         this.content = content;
+        this.users = List.of(user);
     }
 }
