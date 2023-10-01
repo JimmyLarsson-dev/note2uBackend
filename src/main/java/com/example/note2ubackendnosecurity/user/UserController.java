@@ -1,9 +1,12 @@
 package com.example.note2ubackendnosecurity.user;
 
+import com.example.note2ubackendnosecurity.other.UserMissingException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.CredentialException;
+
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("api/user")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
 
@@ -17,4 +20,11 @@ public class UserController {
     public String register(@RequestBody RegisterRequest request) {
         return service.register(request.getUsername(), request.getPassword(), request.getEmail());
     }
+
+    @GetMapping("/login")
+    public String Login(@RequestBody LoginRequest request) throws UserMissingException, CredentialException {
+        return service.login(request);
+
+    }
+
 }

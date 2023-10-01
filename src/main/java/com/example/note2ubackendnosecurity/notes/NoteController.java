@@ -28,8 +28,13 @@ public class NoteController {
     }
 
     @DeleteMapping("/deleteNote")
-    public String deleteNote(@RequestBody EditNoteRequest request) {
+    public String deleteNote(@RequestBody EditNoteRequest request) throws NoteMissingException, NoteAccessMissingException {
         return noteService.deleteNote(request.getNoteId(), request.getUserId(), request.getTitle(), request.getContent());
+    }
+
+    @GetMapping("/getNote")
+    public GetNoteResponse getNote(@RequestBody GetNoteRequest getNoteRequest) throws NoteMissingException, NoteAccessMissingException {
+        return noteService.getNote(getNoteRequest);
     }
 
 }
