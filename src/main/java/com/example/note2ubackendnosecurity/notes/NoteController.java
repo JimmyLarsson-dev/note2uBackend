@@ -37,4 +37,9 @@ public class NoteController {
         return noteService.getNote(getNoteRequest);
     }
 
+    @PostMapping("/shareNote")
+    public String shareNote(@RequestBody ShareNoteRequest shareNoteRequest) {
+
+    }
+
 }
