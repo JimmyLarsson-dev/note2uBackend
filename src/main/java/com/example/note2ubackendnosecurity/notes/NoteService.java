@@ -12,8 +12,11 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class NoteService {
@@ -21,7 +24,6 @@ public class NoteService {
     private final NoteRepo noteRepo;
     private final UserRepo userRepo;
 
-    @Autowired
     public NoteService(NoteRepo noteRepo, UserRepo userRepo) {
         this.noteRepo = noteRepo;
         this.userRepo = userRepo;
@@ -95,4 +97,25 @@ public class NoteService {
                 note.getContent());
     }
 
+    public List<GetNoteResponse> getAllMyNotes(String id) {
+
+        Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(id));
+        List<GetNoteResponse> dtoList;
+
+        if(optionalUser.isPresent()) {
+            dtoList = optionalUser.get().getNotes()
+                    .stream()
+                    .map(x -> noteEntityToGetNoteResponse(x)).toList();
+        } else {
+            dtoList = new ArrayList<>();
+        }
+
+        return dtoList;
+    }
+
+
+    private GetNoteResponse noteEntityToGetNoteResponse(NoteEntity note) {
+
+        return new GetNoteResponse(note.getId(), note.getTitle(), note.getContent());
+    }
 }

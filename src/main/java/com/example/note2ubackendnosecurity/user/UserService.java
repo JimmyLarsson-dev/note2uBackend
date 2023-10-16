@@ -11,13 +11,15 @@ import org.springframework.stereotype.Service;
 import javax.security.auth.login.CredentialException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepo repo;
+
+    public UserService(UserRepo repo) {
+        this.repo = repo;
+    }
 
     public String register(String username, String password, String email) {
 

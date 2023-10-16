@@ -6,6 +6,8 @@ import com.example.note2ubackendnosecurity.other.UserMissingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/note")
 public class NoteController {
@@ -35,6 +37,11 @@ public class NoteController {
     @GetMapping("/getNote")
     public GetNoteResponse getNote(@RequestBody GetNoteRequest getNoteRequest) throws NoteMissingException, NoteAccessMissingException {
         return noteService.getNote(getNoteRequest);
+    }
+
+    @GetMapping("/getAllMyNotes")
+    public List<GetNoteResponse> getAllMyNotes(@RequestHeader String id) throws NoteMissingException, NoteAccessMissingException {
+        return noteService.getAllMyNotes(id);
     }
 
 }
