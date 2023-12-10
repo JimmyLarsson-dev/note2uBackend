@@ -28,7 +28,8 @@ public class StartUpConfig {
                 "j@m.com",
                 "jimbo",
                 "password",
-                List.of(note1));
+                List.of(note1),
+                List.of());
         note1.setUsers(List.of(user1));
         note1.setTitle("init note1");
         note1.setContent("This is the first note, initialized by Startupconfig.");
@@ -38,7 +39,8 @@ public class StartUpConfig {
                 "swimmy@mail.com",
                 "swimbolino",
                 "passpass",
-                List.of(note2));
+                List.of(note2),
+                List.of());
         note2.setUsers(List.of(user2));
         note2.setTitle("init note2");
         note2.setContent("This is the first note, initialized by Startupconfig.");

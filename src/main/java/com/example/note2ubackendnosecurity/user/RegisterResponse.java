@@ -9,5 +9,5 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RegisterResponse {
 
-    UUID id;
+    String id;
 }

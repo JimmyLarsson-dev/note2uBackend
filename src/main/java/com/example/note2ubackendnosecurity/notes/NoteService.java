@@ -5,13 +5,8 @@ import com.example.note2ubackendnosecurity.other.NoteMissingException;
 import com.example.note2ubackendnosecurity.other.UserMissingException;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.PermissionDeniedDataAccessException;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -103,6 +98,33 @@ public class NoteService {
             dtoList = new ArrayList<>();
         }
         return dtoList;
+    }
+
+    public String inviteUser(InvitationRequest request) {
+
+        //lägg till regex för att kolla email
+        if(!request.getRecipientEmail().isEmpty()) {
+            Optional<UserEntity> optUserRecipient = userRepo.findByEmail(request.getRecipientEmail());
+
+            if(optUserRecipient.isPresent()) {
+                List<UserEntity> blockedList = optUserRecipient.get().getBlockedUsers()
+                        .stream()
+                        .filter(x -> x.getId().toString().equals(request.getInviterId()))
+                        .toList();
+                if(!blockedList.isEmpty()) {
+                    return "blocked";
+                }
+            } else {
+                return "emailNotFound";
+            }
+
+
+
+
+        }
+
+        return "";
+
     }
 
     private GetNoteResponse entityToDto(NoteEntity note) {

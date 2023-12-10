@@ -12,6 +12,8 @@ public interface UserRepo extends JpaRepository <UserEntity, UUID>{
     boolean existsByIdAndNotesContains(UUID userId, NoteEntity note);
 
 
+    Optional<UserEntity> findByEmail(String email);
+
     Optional<UserEntity> findByUsername(String username);
 
 }

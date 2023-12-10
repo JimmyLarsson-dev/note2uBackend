@@ -28,10 +28,16 @@ public class UserEntity {
 //    @JoinColumn(name = "note_id")
     private List<NoteEntity> notes;
 
-    public UserEntity(String email, String username, String password, List<NoteEntity> notes) {
+//    @ManyToMany(mappedBy = "user_id")
+//    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToMany
+    private List<UserEntity> blockedUsers;
+
+    public UserEntity(String email, String username, String password, List<NoteEntity> notes, List<UserEntity> blockedUsers) {
         this.email = email;
         this.username = username;
         this.password = password;
         this.notes = notes;
+        this.blockedUsers = blockedUsers;
     }
 }
