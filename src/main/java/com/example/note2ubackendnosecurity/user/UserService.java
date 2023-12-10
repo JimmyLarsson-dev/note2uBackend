@@ -21,7 +21,7 @@ public class UserService {
         this.repo = repo;
     }
 
-    public String register(String username, String password, String email) {
+    public RegisterResponse register(String username, String password, String email) {
 
 //        if (repo.findAll()
 //                .stream()
@@ -43,7 +43,8 @@ public class UserService {
         NoteEntity noteEntity = new NoteEntity(WelcomeNote.welcomeLable, WelcomeNote.welcomeContent, user);
         user.setNotes(List.of(noteEntity));
         repo.save(user);
-        return user.getId().toString();
+
+        return new RegisterResponse(user.getId());
     }
 
     public String login(LoginRequest request) throws CredentialException, UserMissingException {
