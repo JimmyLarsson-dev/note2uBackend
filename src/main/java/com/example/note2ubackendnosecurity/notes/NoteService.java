@@ -90,13 +90,6 @@ public class NoteService {
         }
     }
 
-    private GetNoteResponse entityToDto(NoteEntity note) {
-        return new GetNoteResponse(
-                note.getId(),
-                note.getTitle(),
-                note.getContent());
-    }
-
     public List<GetNoteResponse> getAllMyNotes(String id) {
 
         Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(id));
@@ -105,17 +98,18 @@ public class NoteService {
         if(optionalUser.isPresent()) {
             dtoList = optionalUser.get().getNotes()
                     .stream()
-                    .map(x -> noteEntityToGetNoteResponse(x)).toList();
+                    .map(x -> entityToDto(x)).toList();
         } else {
             dtoList = new ArrayList<>();
         }
-
         return dtoList;
     }
 
-
-    private GetNoteResponse noteEntityToGetNoteResponse(NoteEntity note) {
-
-        return new GetNoteResponse(note.getId(), note.getTitle(), note.getContent());
+    private GetNoteResponse entityToDto(NoteEntity note) {
+        return new GetNoteResponse(
+                note.getId(),
+                note.getTitle(),
+                note.getContent(),
+                note.getUsers());
     }
 }
