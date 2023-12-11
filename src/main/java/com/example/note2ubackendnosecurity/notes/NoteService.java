@@ -1,5 +1,6 @@
 package com.example.note2ubackendnosecurity.notes;
 
+import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
 import com.example.note2ubackendnosecurity.other.NoteAccessMissingException;
 import com.example.note2ubackendnosecurity.other.NoteMissingException;
 import com.example.note2ubackendnosecurity.other.UserMissingException;
@@ -102,14 +103,14 @@ public class NoteService {
 
 
     //byt till throw istället för att returnera strängar vid fel. Blir lättare att tolka fel i frontend då
-    public String inviteUserByEmail(InvitationRequest request) {
+    public String inviteUserByEmail(InvitationRequest request) throws UserMissingException, NoteMissingException {
 
         if(!userRepo.existsById(UUID.fromString(request.getInviterId()))) {
-            return "inviterNotFound";
+            throw new UserMissingException("Invalid user request");
         }
 
         if(!noteRepo.existsById(UUID.fromString(request.getNoteId()))) {
-            return "noteNotFound";
+            throw new NoteMissingException("No such note found");
         }
 
         //lägg till regex för att kolla email
@@ -131,24 +132,24 @@ public class NoteService {
                     return "Note sent!";
                 }
             } else {
-                return "emailNotFound";
+                throw new UserMissingException("Recipient not found!");
             }
         } else {
-            return "invalidEmail";
+            throw new InvalidInputException("Invalid email format");
         }
     }
 
     //byt till throw istället för att returnera strängar vid fel. Blir lättare att tolka fel i frontend då
-    public String inviteUserByUsername(InvitationRequest request) {
+    public String inviteUserByUsername(InvitationRequest request) throws UserMissingException, NoteMissingException {
 
         if(!userRepo.existsById(UUID.fromString(request.getInviterId()))) {
-            return "inviterNotFound";
+            throw new UserMissingException("Invalid user request");
         }
 
         if(!noteRepo.existsById(UUID.fromString(request.getNoteId()))) {
-            return "noteNotFound";
+            throw new NoteMissingException("No such note found");
         }
-
+//Lägg till regex för att kolla username
         if(!request.getRecipientUsername().isEmpty()) {
             Optional<UserEntity> optUserRecipient = userRepo.findByUsername(request.getRecipientEmail());
 
@@ -167,10 +168,10 @@ public class NoteService {
                     return "Note sent!";
                 }
             } else {
-                return "usernameNotFound";
+                throw new UserMissingException("Recipient not found");
             }
         } else {
-            return "invalidEmail";
+            throw new InvalidInputException("Invalid username format");
         }
     }
 

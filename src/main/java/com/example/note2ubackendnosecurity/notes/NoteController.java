@@ -40,17 +40,17 @@ public class NoteController {
     }
 
     @GetMapping("/getAllMyNotes")
-    public List<GetNoteResponse> getAllMyNotes(@RequestHeader String id) throws NoteMissingException, NoteAccessMissingException {
+    public List<GetNoteResponse> getAllMyNotes(@RequestHeader String id) throws NoteMissingException, NoteAccessMissingException, UserMissingException {
         return noteService.getAllMyNotes(id);
     }
 
     @PatchMapping("/inviteUserByEmail")
-    public String inviteUserByEmail(@RequestBody InvitationRequest request) {
+    public String inviteUserByEmail(@RequestBody InvitationRequest request) throws UserMissingException, NoteMissingException {
         return noteService.inviteUserByEmail(request);
     }
 
     @PatchMapping("/inviteUserByUsername")
-    public String inviteUserByUsername(@RequestBody InvitationRequest request) {
+    public String inviteUserByUsername(@RequestBody InvitationRequest request) throws UserMissingException, NoteMissingException {
         return noteService.inviteUserByUsername(request);
     }
 }
