@@ -85,7 +85,7 @@ public class NoteService {
         }
     }
 
-    public List<GetNoteResponse> getAllMyNotes(String id) {
+    public List<GetNoteResponse> getAllMyNotes(String id) throws UserMissingException {
 
         Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(id));
         List<GetNoteResponse> dtoList;
@@ -95,12 +95,22 @@ public class NoteService {
                     .stream()
                     .map(x -> entityToDto(x)).toList();
         } else {
-            dtoList = new ArrayList<>();
+            throw new UserMissingException("No such user!");
         }
         return dtoList;
     }
 
-    public String inviteUser(InvitationRequest request) {
+
+    //byt till throw istället för att returnera strängar vid fel. Blir lättare att tolka fel i frontend då
+    public String inviteUserByEmail(InvitationRequest request) {
+
+        if(!userRepo.existsById(UUID.fromString(request.getInviterId()))) {
+            return "inviterNotFound";
+        }
+
+        if(!noteRepo.existsById(UUID.fromString(request.getNoteId()))) {
+            return "noteNotFound";
+        }
 
         //lägg till regex för att kolla email
         if(!request.getRecipientEmail().isEmpty()) {
@@ -113,18 +123,55 @@ public class NoteService {
                         .toList();
                 if(!blockedList.isEmpty()) {
                     return "blocked";
+                } else {
+                    //här borde en förfrågan gå ut till mottagaren, istället för att bara lägga till note.
+                    optUserRecipient.get().getNotes().add(noteRepo.findById(UUID.fromString(request.getNoteId())).get());
+                    NoteEntity note = noteRepo.findById(UUID.fromString(request.getNoteId())).get();
+                    note.getUsers().add(optUserRecipient.get());
+                    return "Note sent!";
                 }
             } else {
                 return "emailNotFound";
             }
+        } else {
+            return "invalidEmail";
+        }
+    }
 
+    //byt till throw istället för att returnera strängar vid fel. Blir lättare att tolka fel i frontend då
+    public String inviteUserByUsername(InvitationRequest request) {
 
-
-
+        if(!userRepo.existsById(UUID.fromString(request.getInviterId()))) {
+            return "inviterNotFound";
         }
 
-        return "";
+        if(!noteRepo.existsById(UUID.fromString(request.getNoteId()))) {
+            return "noteNotFound";
+        }
 
+        if(!request.getRecipientUsername().isEmpty()) {
+            Optional<UserEntity> optUserRecipient = userRepo.findByUsername(request.getRecipientEmail());
+
+            if(optUserRecipient.isPresent()) {
+                List<UserEntity> blockedList = optUserRecipient.get().getBlockedUsers()
+                        .stream()
+                        .filter(x -> x.getId().toString().equals(request.getInviterId()))
+                        .toList();
+                if(!blockedList.isEmpty()) {
+                    return "blocked";
+                } else {
+                    //här borde en förfrågan gå ut till mottagaren, istället för att bara lägga till note.
+                    optUserRecipient.get().getNotes().add(noteRepo.findById(UUID.fromString(request.getNoteId())).get());
+                    NoteEntity note = noteRepo.findById(UUID.fromString(request.getNoteId())).get();
+                    note.getUsers().add(optUserRecipient.get());
+                    return "Note sent!";
+                }
+            } else {
+                return "usernameNotFound";
+            }
+        } else {
+            return "invalidEmail";
+        }
     }
 
     private GetNoteResponse entityToDto(NoteEntity note) {

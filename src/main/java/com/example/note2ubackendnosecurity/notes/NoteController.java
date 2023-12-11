@@ -44,9 +44,13 @@ public class NoteController {
         return noteService.getAllMyNotes(id);
     }
 
-    @PatchMapping("/inviteUser")
-    public String inviteUser(@RequestBody InvitationRequest request) {
-        return noteService.inviteUser(request);
+    @PatchMapping("/inviteUserByEmail")
+    public String inviteUserByEmail(@RequestBody InvitationRequest request) {
+        return noteService.inviteUserByEmail(request);
     }
 
+    @PatchMapping("/inviteUserByUsername")
+    public String inviteUserByUsername(@RequestBody InvitationRequest request) {
+        return noteService.inviteUserByUsername(request);
+    }
 }

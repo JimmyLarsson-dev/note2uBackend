@@ -22,7 +22,7 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String Login(@RequestBody LoginRequest request) throws UserMissingException, CredentialException {
+    public LoginResponse Login(@RequestBody LoginRequest request) throws UserMissingException, CredentialException {
         return service.login(request);
 
     }

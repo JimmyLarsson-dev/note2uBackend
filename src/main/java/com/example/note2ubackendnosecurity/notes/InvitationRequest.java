@@ -6,7 +6,7 @@ import lombok.Data;
 public class InvitationRequest {
 
     private String inviterId;
-    private String recipientId;
+    private String recipientUsername;
     private String recipientEmail;
     private String noteId;
 }

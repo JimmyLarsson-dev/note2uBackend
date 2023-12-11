@@ -1,13 +1,11 @@
 package com.example.note2ubackendnosecurity.user;
 
+import com.example.note2ubackendnosecurity.exceptions.UserAlreadyRegisteredException;
+import com.example.note2ubackendnosecurity.exceptions.UserNameAlreadyExistsException;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
 import com.example.note2ubackendnosecurity.other.UserMissingException;
 import com.example.note2ubackendnosecurity.other.WelcomeNote;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.security.auth.login.CredentialException;
 import java.util.List;
 import java.util.Optional;
@@ -25,11 +23,11 @@ public class UserService {
 
         //lägg till regex för att kolla mailen
 
-        if(repo.findByEmail(email).isPresent()) {
-            return new RegisterResponse("emailAlreadyRegistered");
+        if (repo.findByEmail(email).isPresent()) {
+            throw new UserAlreadyRegisteredException("Email already registered");
         }
-        if(repo.findByUsername(username).isPresent()) {
-            return new RegisterResponse("usernameTaken");
+        if (repo.findByUsername(username).isPresent()) {
+            throw new UserNameAlreadyExistsException("Username already registered");
         }
 
         System.out.println("username: " + username + " password: " + password + " email: " + email);
@@ -44,15 +42,23 @@ public class UserService {
         user.setNotes(List.of(noteEntity));
         repo.save(user);
 
-        return new RegisterResponse(user.getId().toString());
+        return new RegisterResponse(
+                user.getId().toString(),
+                user.getUsername(),
+                user.getEmail()
+                );
     }
 
-    public String login(LoginRequest request) throws CredentialException, UserMissingException {
+    public LoginResponse login(LoginRequest request) throws CredentialException, UserMissingException {
         Optional<UserEntity> optionalUser = repo.findByUsername(request.getUsername());
 
-        if(optionalUser.isPresent()) {
-            if(optionalUser.get().getPassword().equals(request.getPassword())) {
-                return optionalUser.get().getId().toString();
+        if (optionalUser.isPresent()) {
+            if (optionalUser.get().getPassword().equals(request.getPassword())) {
+                return new LoginResponse(
+                        optionalUser.get().getId().toString(),
+                        optionalUser.get().getUsername(),
+                        optionalUser.get().getEmail()
+                );
             } else {
                 throw new CredentialException("Incorrect credentials");
             }
