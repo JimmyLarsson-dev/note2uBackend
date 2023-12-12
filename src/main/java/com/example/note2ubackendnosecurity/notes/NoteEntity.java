@@ -22,6 +22,7 @@ public class NoteEntity {
     @Column(name = "note_id")
     UUID id;
 
+    private boolean isChecklist;
     private String title;
     private String content;
 
