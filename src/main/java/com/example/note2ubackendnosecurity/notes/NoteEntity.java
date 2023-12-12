@@ -1,7 +1,6 @@
 package com.example.note2ubackendnosecurity.notes;
 
 import com.example.note2ubackendnosecurity.user.UserEntity;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
@@ -24,16 +23,18 @@ public class NoteEntity {
 
     private boolean isChecklist;
     private String title;
-    private String content;
+    private String textContent;
+    @OneToMany
+    private List<NoteContent> noteContents;
 
     @ManyToMany
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "userId")
     private List<UserEntity> users;
 
-    public NoteEntity(String title, String content, UserEntity user) {
+    public NoteEntity(String title, String textContent, UserEntity user) {
         this.title = title;
-        this.content = content;
+        this.textContent = textContent;
         this.users = List.of(user);
     }
 }

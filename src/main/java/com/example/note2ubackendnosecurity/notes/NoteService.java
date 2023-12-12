@@ -8,11 +8,9 @@ import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class NoteService {
@@ -44,7 +42,7 @@ public class NoteService {
         if(optNote.isPresent()) {
             if(userRepo.existsByIdAndNotesContains(UUID.fromString(userId), optNote.get())) {
                 optNote.get().setTitle(title);
-                optNote.get().setContent(content);
+                optNote.get().setTextContent(content);
                 return "Note updated!";
             } else {
                 throw new NoteAccessMissingException("User does not have access to that note!");
@@ -179,7 +177,7 @@ public class NoteService {
         return new GetNoteResponse(
                 note.getId(),
                 note.getTitle(),
-                note.getContent(),
+                note.getTextContent(),
                 note.getUsers());
     }
 }
