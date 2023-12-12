@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.security.auth.login.CredentialException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -29,9 +30,7 @@ public class UserService {
         if (repo.findByUsername(username).isPresent()) {
             throw new UserNameAlreadyExistsException("Username already registered");
         }
-
-        System.out.println("username: " + username + " password: " + password + " email: " + email);
-
+        
         UserEntity user = new UserEntity(
                 email,
                 username,
@@ -66,5 +65,31 @@ public class UserService {
             throw new UserMissingException("No such user found in database");
         }
 
+    }
+
+    public String blockUser(BlockRequest request) throws UserMissingException {
+        UserEntity user = checkUsersExist(request);
+        user.getBlockedUsers().add(repo.findByEmail(request.getBlockedUserEmail()).get());
+
+        return "User with email " + request.getBlockedUserEmail() + " has been blocked.";
+    }
+
+    public String unblockUser(BlockRequest request) throws UserMissingException {
+        UserEntity user = checkUsersExist(request);
+        user.getBlockedUsers().remove(repo.findByEmail(request.getBlockedUserEmail()).get());
+
+        return "User has been unblocked";
+    }
+
+
+    private UserEntity checkUsersExist(BlockRequest request) throws UserMissingException {
+        if(repo.findById(UUID.fromString(request.getCallingUserId())).isEmpty()) {
+            throw new UserMissingException("No such user found in database");
+        }
+        if(repo.findByEmail(request.getBlockedUserEmail()).isEmpty()) {
+            throw new UserMissingException("Cannot find user, unable to block.");
+        }
+
+        return repo.findById(UUID.fromString(request.getCallingUserId())).get();
     }
 }
