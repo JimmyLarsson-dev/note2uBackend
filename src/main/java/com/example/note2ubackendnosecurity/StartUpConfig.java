@@ -32,7 +32,7 @@ public class StartUpConfig {
                 List.of());
         note1.setUsers(List.of(user1));
         note1.setTitle("init note1");
-        note1.setTextContent("This is the first note, initialized by Startupconfig.");
+        note1.setContent("This is the first note, initialized by Startupconfig.");
 
         NoteEntity note2 = new NoteEntity();
         UserEntity user2 = new UserEntity(
@@ -43,7 +43,7 @@ public class StartUpConfig {
                 List.of());
         note2.setUsers(List.of(user2));
         note2.setTitle("init note2");
-        note2.setTextContent("This is the first note, initialized by Startupconfig.");
+        note2.setContent("This is the first note, initialized by Startupconfig.");
         noteRepo.save(note1);
         noteRepo.save(note2);
 

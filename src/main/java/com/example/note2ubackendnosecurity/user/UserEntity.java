@@ -1,5 +1,6 @@
 package com.example.note2ubackendnosecurity.user;
 
+import com.example.note2ubackendnosecurity.checklist.ChecklistEntity;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,6 +28,10 @@ public class UserEntity {
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
 //    @JoinColumn(name = "note_id")
     private List<NoteEntity> notes;
+
+    @ManyToMany()
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
+    private List<ChecklistEntity> checkLists;
 
 //    @ManyToMany(mappedBy = "user_id")
 //    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})

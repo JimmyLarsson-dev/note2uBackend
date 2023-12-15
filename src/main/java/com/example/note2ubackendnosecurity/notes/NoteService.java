@@ -42,7 +42,7 @@ public class NoteService {
         if(optNote.isPresent()) {
             if(userRepo.existsByIdAndNotesContains(UUID.fromString(userId), optNote.get())) {
                 optNote.get().setTitle(title);
-                optNote.get().setTextContent(content);
+                optNote.get().setContent(content);
                 return "Note updated!";
             } else {
                 throw new NoteAccessMissingException("User does not have access to that note!");
@@ -175,7 +175,7 @@ public class NoteService {
         return new GetNoteResponse(
                 note.getId(),
                 note.getTitle(),
-                note.getTextContent(),
+                note.getContent(),
                 note.getUsers());
     }
 }

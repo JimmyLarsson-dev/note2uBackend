@@ -21,9 +21,7 @@ public class NoteEntity {
     @Column(name = "note_id")
     UUID id;
 
-    private boolean isChecklist;
     private String title;
-    private String textContent;
     private String content;
 
     @ManyToMany
@@ -31,9 +29,9 @@ public class NoteEntity {
     @JoinColumn(name = "userId")
     private List<UserEntity> users;
 
-    public NoteEntity(String title, String textContent, UserEntity user) {
+    public NoteEntity(String title, String content, UserEntity user) {
         this.title = title;
-        this.textContent = textContent;
+        this.content = content;
         this.users = List.of(user);
     }
 }
