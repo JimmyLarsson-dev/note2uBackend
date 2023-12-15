@@ -74,11 +74,9 @@ public class NoteService {
             if(optionalNote.get().getUsers().contains(
                     userRepo.findById(UUID.fromString(getNoteRequest.getUserId())).get())) {
                 return entityToDto(optionalNote.get());
-
             } else {
                 throw new NoteAccessMissingException ("You do not have access to that note");
             }
-
         } else {
             throw new NoteMissingException("That note does not exist");
         }

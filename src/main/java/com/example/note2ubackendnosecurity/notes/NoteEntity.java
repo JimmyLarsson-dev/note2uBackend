@@ -24,8 +24,7 @@ public class NoteEntity {
     private boolean isChecklist;
     private String title;
     private String textContent;
-    @OneToMany
-    private List<NoteContent> noteContents;
+    private String content;
 
     @ManyToMany
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})

@@ -21,10 +21,9 @@ public class UserController {
         return service.register(request.getUsername(), request.getPassword(), request.getEmail());
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public LoginResponse Login(@RequestBody LoginRequest request) throws UserMissingException, CredentialException {
         return service.login(request);
-
     }
 
     @PostMapping("/blockUser")
@@ -36,5 +35,4 @@ public class UserController {
     public String unblockUser(BlockRequest request) throws UserMissingException {
         return service.unblockUser(request);
     }
-
 }
