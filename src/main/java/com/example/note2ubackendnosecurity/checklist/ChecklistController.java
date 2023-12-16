@@ -19,7 +19,7 @@ public class ChecklistController {
     }
 
     @PutMapping("/updateCheckList")
-    public ChecklistResponse updateChecklist(@RequestBody UpdateChecklistRequest request) {
+    public ChecklistResponse updateChecklist(@RequestBody UpdateChecklistRequest request) throws UserMissingException {
         return checklistService.updateChecklist(request);
     }
 
