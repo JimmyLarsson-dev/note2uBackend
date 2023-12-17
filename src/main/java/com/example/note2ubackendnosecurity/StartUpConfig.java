@@ -26,8 +26,8 @@ public class StartUpConfig {
         NoteEntity note1 = new NoteEntity();
         UserEntity user1 = new UserEntity(
                 "j@m.com",
-                "jimbo",
-                "password",
+                "j",
+                "p",
                 List.of(note1),
                 List.of());
         note1.setUsers(List.of(user1));

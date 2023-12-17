@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/note")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class NoteController {
 
     NoteService noteService;
@@ -41,6 +42,8 @@ public class NoteController {
 
     @GetMapping("/getAllMyNotes")
     public List<GetNoteResponse> getAllMyNotes(@RequestHeader String id) throws NoteMissingException, NoteAccessMissingException, UserMissingException {
+
+        System.out.println("**********" + id);
         return noteService.getAllMyNotes(id);
     }
 

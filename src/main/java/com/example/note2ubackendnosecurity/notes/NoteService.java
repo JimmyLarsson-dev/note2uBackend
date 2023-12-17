@@ -8,9 +8,11 @@ import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class NoteService {
@@ -25,8 +27,8 @@ public class NoteService {
 
     public String createNote(String title, String content, String userId) throws UserMissingException {
         Optional<UserEntity> user = userRepo.findById(UUID.fromString(userId));
-        if(user.isPresent()) {
-            if(title == null) {
+        if (user.isPresent()) {
+            if (title == null) {
                 title = " ";
             }
             NoteEntity note = new NoteEntity(title, content, user.get());
@@ -39,8 +41,8 @@ public class NoteService {
 
     public String editNote(String noteId, String userId, String title, String content) throws NoteAccessMissingException, NoteMissingException {
         Optional<NoteEntity> optNote = noteRepo.findById(UUID.fromString(noteId));
-        if(optNote.isPresent()) {
-            if(userRepo.existsByIdAndNotesContains(UUID.fromString(userId), optNote.get())) {
+        if (optNote.isPresent()) {
+            if (userRepo.existsByIdAndNotesContains(UUID.fromString(userId), optNote.get())) {
                 optNote.get().setTitle(title);
                 optNote.get().setContent(content);
                 return "Note updated!";
@@ -54,8 +56,8 @@ public class NoteService {
 
     public String deleteNote(String noteId, String userId, String title, String content) throws NoteAccessMissingException, NoteMissingException {
         Optional<NoteEntity> optNote = noteRepo.findById(UUID.fromString(noteId));
-        if(optNote.isPresent()) {
-            if(userRepo.existsByIdAndNotesContains(UUID.fromString(userId), optNote.get())) {
+        if (optNote.isPresent()) {
+            if (userRepo.existsByIdAndNotesContains(UUID.fromString(userId), optNote.get())) {
                 noteRepo.delete(optNote.get());
                 return "Note deleted!";
             } else {
@@ -69,13 +71,13 @@ public class NoteService {
     public GetNoteResponse getNote(GetNoteRequest getNoteRequest) throws NoteMissingException, NoteAccessMissingException {
         Optional<NoteEntity> optionalNote = noteRepo.findById(UUID.fromString(getNoteRequest.getNoteId()));
 
-        if(optionalNote.isPresent()) {
+        if (optionalNote.isPresent()) {
 
-            if(optionalNote.get().getUsers().contains(
+            if (optionalNote.get().getUsers().contains(
                     userRepo.findById(UUID.fromString(getNoteRequest.getUserId())).get())) {
                 return entityToDto(optionalNote.get());
             } else {
-                throw new NoteAccessMissingException ("You do not have access to that note");
+                throw new NoteAccessMissingException("You do not have access to that note");
             }
         } else {
             throw new NoteMissingException("That note does not exist");
@@ -85,40 +87,50 @@ public class NoteService {
     public List<GetNoteResponse> getAllMyNotes(String id) throws UserMissingException {
 
         Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(id));
-        List<GetNoteResponse> dtoList;
 
-        if(optionalUser.isPresent()) {
-            dtoList = optionalUser.get().getNotes()
-                    .stream()
-                    .map(x -> entityToDto(x)).toList();
-        } else {
+        List<GetNoteResponse> dtoList = new ArrayList<>();
+
+        if (optionalUser.isEmpty()) {
             throw new UserMissingException("No such user!");
+
+        }
+
+        if (!optionalUser.get().getNotes().isEmpty()) {
+//                optionalUser.get().getNotes()
+//                        .forEach(x -> dtoList.add(new GetNoteResponse(x.getId(), x.getTitle(), x.getContent(), x.getUsers())));
+
+            for (int i = 0; i < optionalUser.get().getNotes().size(); i++) {
+                dtoList.add(new GetNoteResponse(optionalUser.get().getNotes().get(i).getId(),
+                        optionalUser.get().getNotes().get(i).getTitle(),
+                        optionalUser.get().getNotes().get(i).getContent(),
+                        optionalUser.get().getNotes().get(i).getUsers().stream().map(x -> x.getId()).collect(Collectors.toList())
+                ));
+            }
         }
         return dtoList;
     }
 
-
     //byt till throw istället för att returnera strängar vid fel. Blir lättare att tolka fel i frontend då
     public String inviteUserByEmail(InvitationRequest request) throws UserMissingException, NoteMissingException {
 
-        if(!userRepo.existsById(UUID.fromString(request.getInviterId()))) {
+        if (!userRepo.existsById(UUID.fromString(request.getInviterId()))) {
             throw new UserMissingException("Invalid user request");
         }
 
-        if(!noteRepo.existsById(UUID.fromString(request.getNoteId()))) {
+        if (!noteRepo.existsById(UUID.fromString(request.getNoteId()))) {
             throw new NoteMissingException("No such note found");
         }
 
         //lägg till regex för att kolla email
-        if(!request.getRecipientEmail().isEmpty()) {
+        if (!request.getRecipientEmail().isEmpty()) {
             Optional<UserEntity> optUserRecipient = userRepo.findByEmail(request.getRecipientEmail());
 
-            if(optUserRecipient.isPresent()) {
+            if (optUserRecipient.isPresent()) {
                 List<UserEntity> blockedList = optUserRecipient.get().getBlockedUsers()
                         .stream()
                         .filter(x -> x.getId().toString().equals(request.getInviterId()))
                         .toList();
-                if(!blockedList.isEmpty()) {
+                if (!blockedList.isEmpty()) {
                     return "blocked";
                 } else {
                     //här borde en förfrågan gå ut till mottagaren, istället för att bara lägga till note.
@@ -138,23 +150,23 @@ public class NoteService {
     //byt till throw istället för att returnera strängar vid fel. Blir lättare att tolka fel i frontend då
     public String inviteUserByUsername(InvitationRequest request) throws UserMissingException, NoteMissingException {
 
-        if(!userRepo.existsById(UUID.fromString(request.getInviterId()))) {
+        if (!userRepo.existsById(UUID.fromString(request.getInviterId()))) {
             throw new UserMissingException("Invalid user request");
         }
 
-        if(!noteRepo.existsById(UUID.fromString(request.getNoteId()))) {
+        if (!noteRepo.existsById(UUID.fromString(request.getNoteId()))) {
             throw new NoteMissingException("No such note found");
         }
 //Lägg till regex för att kolla username
-        if(!request.getRecipientUsername().isEmpty()) {
+        if (!request.getRecipientUsername().isEmpty()) {
             Optional<UserEntity> optUserRecipient = userRepo.findByUsername(request.getRecipientEmail());
 
-            if(optUserRecipient.isPresent()) {
+            if (optUserRecipient.isPresent()) {
                 List<UserEntity> blockedList = optUserRecipient.get().getBlockedUsers()
                         .stream()
                         .filter(x -> x.getId().toString().equals(request.getInviterId()))
                         .toList();
-                if(!blockedList.isEmpty()) {
+                if (!blockedList.isEmpty()) {
                     return "blocked";
                 } else {
                     //här borde en förfrågan gå ut till mottagaren, istället för att bara lägga till note.
@@ -176,6 +188,9 @@ public class NoteService {
                 note.getId(),
                 note.getTitle(),
                 note.getContent(),
-                note.getUsers());
+                note.getUsers()
+                        .stream()
+                        .map(x -> x.getId())
+                        .collect(Collectors.toList()));
     }
 }

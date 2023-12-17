@@ -24,7 +24,7 @@ public class UserEntity {
     private String email;
     private String username;
     private String password;
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
 //    @JoinColumn(name = "note_id")
     private List<NoteEntity> notes;

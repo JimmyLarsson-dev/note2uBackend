@@ -11,6 +11,8 @@ import java.util.UUID;
 public interface UserRepo extends JpaRepository <UserEntity, UUID>{
     boolean existsByIdAndNotesContains(UUID userId, NoteEntity note);
 
+    @Override
+    Optional<UserEntity> findById(UUID uuid);
 
     Optional<UserEntity> findByEmail(String email);
 
