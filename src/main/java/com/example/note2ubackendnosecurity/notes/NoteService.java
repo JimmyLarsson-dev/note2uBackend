@@ -1,9 +1,9 @@
 package com.example.note2ubackendnosecurity.notes;
 
 import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
-import com.example.note2ubackendnosecurity.other.NoteAccessMissingException;
-import com.example.note2ubackendnosecurity.other.NoteMissingException;
-import com.example.note2ubackendnosecurity.other.UserMissingException;
+import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
+import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
+import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class NoteService {
             if (title == null) {
                 title = " ";
             }
-            NoteEntity note = new NoteEntity(title, content, user.get());
+            NoteEntity note = new NoteEntity(title, content, user.get(), false);
             noteRepo.save(note);
             return note.getId().toString();
         } else {
@@ -103,7 +103,8 @@ public class NoteService {
                 dtoList.add(new GetNoteResponse(optionalUser.get().getNotes().get(i).getId(),
                         optionalUser.get().getNotes().get(i).getTitle(),
                         optionalUser.get().getNotes().get(i).getContent(),
-                        optionalUser.get().getNotes().get(i).getUsers().stream().map(x -> x.getId()).collect(Collectors.toList())
+                        optionalUser.get().getNotes().get(i).getUsers().stream().map(x -> x.getId()).collect(Collectors.toList()),
+                        optionalUser.get().getNotes().get(i).isStatusBeenViewed()
                 ));
             }
         }
@@ -191,6 +192,7 @@ public class NoteService {
                 note.getUsers()
                         .stream()
                         .map(x -> x.getId())
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()),
+                note.isStatusBeenViewed());
     }
 }

@@ -1,6 +1,6 @@
 package com.example.note2ubackendnosecurity.checklist;
 
-import com.example.note2ubackendnosecurity.other.UserMissingException;
+import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;

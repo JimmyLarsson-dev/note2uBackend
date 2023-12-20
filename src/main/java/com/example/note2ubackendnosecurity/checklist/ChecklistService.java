@@ -1,14 +1,13 @@
 package com.example.note2ubackendnosecurity.checklist;
 
 import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
-import com.example.note2ubackendnosecurity.other.UserMissingException;
+import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ChecklistService {

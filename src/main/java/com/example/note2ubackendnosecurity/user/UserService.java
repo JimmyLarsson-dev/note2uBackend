@@ -3,7 +3,7 @@ package com.example.note2ubackendnosecurity.user;
 import com.example.note2ubackendnosecurity.exceptions.UserAlreadyRegisteredException;
 import com.example.note2ubackendnosecurity.exceptions.UserNameAlreadyExistsException;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
-import com.example.note2ubackendnosecurity.other.UserMissingException;
+import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.other.WelcomeNote;
 import org.springframework.stereotype.Service;
 import javax.security.auth.login.CredentialException;
@@ -37,7 +37,11 @@ public class UserService {
                 password,
                 List.of(),
                 List.of());
-        NoteEntity noteEntity = new NoteEntity(WelcomeNote.welcomeLable, WelcomeNote.welcomeContent, user);
+        NoteEntity noteEntity = new NoteEntity(
+                WelcomeNote.welcomeLable,
+                WelcomeNote.welcomeContent,
+                user, false);
+
         user.setNotes(List.of(noteEntity));
         repo.save(user);
 

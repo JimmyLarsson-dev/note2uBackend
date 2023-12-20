@@ -1,8 +1,8 @@
 package com.example.note2ubackendnosecurity.notes;
 
-import com.example.note2ubackendnosecurity.other.NoteAccessMissingException;
-import com.example.note2ubackendnosecurity.other.NoteMissingException;
-import com.example.note2ubackendnosecurity.other.UserMissingException;
+import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
+import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
+import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

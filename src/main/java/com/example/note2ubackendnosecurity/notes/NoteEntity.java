@@ -23,15 +23,17 @@ public class NoteEntity {
 
     private String title;
     private String content;
+    private boolean statusBeenViewed;
 
     @ManyToMany
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "userId")
     private List<UserEntity> users;
 
-    public NoteEntity(String title, String content, UserEntity user) {
+    public NoteEntity(String title, String content, UserEntity user, Boolean statusBeenViewed) {
         this.title = title;
         this.content = content;
         this.users = List.of(user);
+        this.statusBeenViewed = statusBeenViewed;
     }
 }

@@ -14,13 +14,7 @@ public class GetNoteResponse {
     private String title;
     private String content;
     private List<UUID> users;
-
-    public GetNoteResponse(UUID id, String title, String content) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-    }
-
+    private boolean hasBeenViewed;
 }
 
 
