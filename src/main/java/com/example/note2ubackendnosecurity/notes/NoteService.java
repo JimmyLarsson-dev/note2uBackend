@@ -31,6 +31,7 @@ public class NoteService {
             if (title == null) {
                 title = " ";
             }
+
             NoteEntity note = new NoteEntity(title, content, user.get(), false);
             noteRepo.save(note);
             return note.getId().toString();

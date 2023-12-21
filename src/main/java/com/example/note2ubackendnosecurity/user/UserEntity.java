@@ -29,7 +29,7 @@ public class UserEntity {
 //    @JoinColumn(name = "note_id")
     private List<NoteEntity> notes;
 
-    @ManyToMany()
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     private List<ChecklistEntity> checkLists;
 
