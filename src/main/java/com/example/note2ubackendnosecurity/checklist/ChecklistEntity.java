@@ -19,8 +19,8 @@ public class ChecklistEntity {
 
 //    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    @Column(name= "checklist_id", columnDefinition = "uuid")
-    private UUID id;
+    @Column(name= "checklist_id")
+    private Long id;
     private String title;
     @ManyToMany()
     @Cascade({org.hibernate.annotations.CascadeType.REFRESH, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.PERSIST})
@@ -32,7 +32,7 @@ public class ChecklistEntity {
     private boolean statusBeenViewed;
 
 
-    public ChecklistEntity(UUID id,
+    public ChecklistEntity(Long id,
                            String title,
                            List<Item> itemList,
                            UserEntity user,
