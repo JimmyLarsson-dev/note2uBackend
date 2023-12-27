@@ -28,9 +28,8 @@ public class ChecklistService {
         }
 
         ChecklistEntity checklistEntity = new ChecklistEntity(
-
                 request.getTitle(),
-//                request.getItemList(),
+                request.getItemList(),
                 optUser.get(),
                 false);
         System.out.println("??????????????????1 " + checklistEntity.getId());
