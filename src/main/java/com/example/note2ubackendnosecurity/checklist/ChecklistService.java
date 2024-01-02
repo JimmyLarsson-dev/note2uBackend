@@ -5,6 +5,8 @@ import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,9 +29,13 @@ public class ChecklistService {
             throw new UserMissingException("No such user");
         }
 
+        List<Item> itemList = new ArrayList<>();
+        request.getItemList()
+                .forEach(item -> itemList.add(new Item(UUID.randomUUID(), item.getTitle(),item.isDone())));
+
         ChecklistEntity checklistEntity = new ChecklistEntity(
                 request.getTitle(),
-                request.getItemList(),
+                itemList,
                 optUser.get(),
                 false);
         System.out.println("??????????????????1 " + checklistEntity.getId());

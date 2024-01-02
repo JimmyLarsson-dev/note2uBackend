@@ -22,10 +22,11 @@ public class ChecklistEntity {
     UUID id;
     private String title;
 
-    @ManyToOne()
-//    @JoinColumn(name = "item_id")
-//    @Cascade({org.hibernate.annotations.CascadeType.REFRESH, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.PERSIST})
+    @ManyToMany
+        @JoinColumn(name = "item_id")
+    @Cascade({CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
     private List<Item> itemList;
+
     @ManyToMany
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "userId")
