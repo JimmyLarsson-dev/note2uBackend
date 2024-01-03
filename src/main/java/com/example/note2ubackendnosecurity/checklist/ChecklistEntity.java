@@ -41,7 +41,5 @@ public class ChecklistEntity {
         this.itemList = itemList;
         this.users = List.of(user);
         this.statusBeenViewed = statusHasBeenViewed;
-
     }
-
 }

@@ -47,14 +47,54 @@ public class StartUpConfig {
         note2.setContent("This is the first note, initialized by Startupconfig.");
         note2.setStatusBeenViewed(false);
 
+        NoteEntity note3 = new NoteEntity();
+        UserEntity user3 = new UserEntity(
+                "whatever@mail.com",
+                "someone",
+                "passpass",
+                List.of(note3),
+                List.of());
+        note3.setUsers(List.of(user3));
+        note3.setTitle("init note3");
+        note3.setContent("This is the first note, initialized by Startupconfig.");
+        note3.setStatusBeenViewed(false);
+
+        NoteEntity note4 = new NoteEntity();
+        UserEntity user4 = new UserEntity(
+                "whoever@mail.com",
+                "person",
+                "passpass",
+                List.of(note4),
+                List.of());
+        note4.setUsers(List.of(user4));
+        note4.setTitle("init note4");
+        note4.setContent("This is the first note, initialized by Startupconfig.");
+        note4.setStatusBeenViewed(false);
+
+        NoteEntity note5 = new NoteEntity();
+        UserEntity user5 = new UserEntity(
+                "someMail@mail.com",
+                "user42",
+                "passpass",
+                List.of(note5),
+                List.of());
+        note5.setUsers(List.of(user5));
+        note5.setTitle("init note5");
+        note5.setContent("This is the first note, initialized by Startupconfig.");
+        note5.setStatusBeenViewed(false);
+
         noteRepo.save(note1);
         noteRepo.save(note2);
+        noteRepo.save(note3);
+        noteRepo.save(note4);
+        noteRepo.save(note5);
 
         return args -> {
             userRepo.save(user1);
             userRepo.save(user2);
-
+            userRepo.save(user3);
+            userRepo.save(user4);
+            userRepo.save(user5);
         };
     }
-
 }

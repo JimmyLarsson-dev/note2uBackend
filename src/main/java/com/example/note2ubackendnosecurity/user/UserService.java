@@ -30,7 +30,7 @@ public class UserService {
         if (repo.findByUsername(username).isPresent()) {
             throw new UserNameAlreadyExistsException("Username already registered");
         }
-        
+
         UserEntity user = new UserEntity(
                 email,
                 username,
@@ -75,12 +75,16 @@ public class UserService {
         UserEntity user = checkUsersExist(request);
         user.getBlockedUsers().add(repo.findByEmail(request.getBlockedUserEmail()).get());
 
+        repo.save(user);
+
         return "User with email " + request.getBlockedUserEmail() + " has been blocked.";
     }
 
     public String unblockUser(BlockRequest request) throws UserMissingException {
         UserEntity user = checkUsersExist(request);
         user.getBlockedUsers().remove(repo.findByEmail(request.getBlockedUserEmail()).get());
+
+        repo.save(user);
 
         return "User has been unblocked";
     }
