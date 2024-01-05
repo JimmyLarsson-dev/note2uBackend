@@ -1,5 +1,6 @@
 package com.example.note2ubackendnosecurity.user;
 
+import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
 import com.example.note2ubackendnosecurity.exceptions.UserAlreadyRegisteredException;
 import com.example.note2ubackendnosecurity.exceptions.UserNameAlreadyExistsException;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
@@ -20,23 +21,27 @@ public class UserService {
         this.repo = repo;
     }
 
-    public RegisterResponse register(String username, String password, String email) {
+    public RegisterResponse register(RegisterRequest request) {
 
         //lägg till regex för att kolla mailen
 
-        if (repo.findByEmail(email).isPresent()) {
+        if (repo.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyRegisteredException("Email already registered");
         }
-        if (repo.findByUsername(username).isPresent()) {
+        if (repo.findByUsername(request.getUsername()).isPresent()) {
             throw new UserNameAlreadyExistsException("Username already registered");
+        }
+        if(!request.getLanguage().equals("SWEDISH") && !request.getLanguage().equals("ENGLISH")) {
+            throw new InvalidInputException("Unacceptable language option");
         }
 
         UserEntity user = new UserEntity(
-                email,
-                username,
-                password,
+                request.getEmail(),
+                request.getUsername(),
+                request.getPassword(),
                 List.of(),
-                List.of());
+                List.of(),
+                request.getLanguage());
         NoteEntity noteEntity = new NoteEntity(
                 WelcomeNote.welcomeLable,
                 WelcomeNote.welcomeContent,
@@ -68,7 +73,6 @@ public class UserService {
         } else {
             throw new UserMissingException("No such user found in database");
         }
-
     }
 
     public String blockUser(BlockRequest request) throws UserMissingException {
@@ -88,7 +92,6 @@ public class UserService {
 
         return "User has been unblocked";
     }
-
 
     private UserEntity checkUsersExist(BlockRequest request) throws UserMissingException {
         if(repo.findById(UUID.fromString(request.getCallingUserId())).isEmpty()) {

@@ -2,6 +2,7 @@ package com.example.note2ubackendnosecurity.user;
 
 import com.example.note2ubackendnosecurity.checklist.ChecklistEntity;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
+import com.example.note2ubackendnosecurity.other.Languages;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
@@ -33,16 +34,19 @@ public class UserEntity {
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     private List<ChecklistEntity> checkLists;
 
+    private Languages language;
+
 //    @ManyToMany(mappedBy = "user_id")
 //    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @OneToMany
     private List<UserEntity> blockedUsers;
 
-    public UserEntity(String email, String username, String password, List<NoteEntity> notes, List<UserEntity> blockedUsers) {
+    public UserEntity(String email, String username, String password, List<NoteEntity> notes, List<UserEntity> blockedUsers, Languages language) {
         this.email = email;
         this.username = username;
         this.password = password;
         this.notes = notes;
         this.blockedUsers = blockedUsers;
+        this.language = language;
     }
 }

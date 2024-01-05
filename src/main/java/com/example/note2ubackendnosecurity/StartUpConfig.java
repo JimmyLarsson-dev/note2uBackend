@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
+import static com.example.note2ubackendnosecurity.other.Languages.*;
 
 @Configuration
 public class StartUpConfig {
@@ -29,7 +30,8 @@ public class StartUpConfig {
                 "j",
                 "p",
                 List.of(note1),
-                List.of());
+                List.of(),
+                SWEDISH);
         note1.setUsers(List.of(user1));
         note1.setTitle("init note1");
         note1.setContent("This is the first note, initialized by Startupconfig.");
@@ -41,7 +43,8 @@ public class StartUpConfig {
                 "swimbolino",
                 "passpass",
                 List.of(note2),
-                List.of());
+                List.of(),
+                SWEDISH);
         note2.setUsers(List.of(user2));
         note2.setTitle("init note2");
         note2.setContent("This is the first note, initialized by Startupconfig.");
@@ -53,7 +56,8 @@ public class StartUpConfig {
                 "someone",
                 "passpass",
                 List.of(note3),
-                List.of());
+                List.of(),
+                SWEDISH);
         note3.setUsers(List.of(user3));
         note3.setTitle("init note3");
         note3.setContent("This is the first note, initialized by Startupconfig.");
@@ -65,7 +69,8 @@ public class StartUpConfig {
                 "person",
                 "passpass",
                 List.of(note4),
-                List.of());
+                List.of(),
+                ENGLISH);
         note4.setUsers(List.of(user4));
         note4.setTitle("init note4");
         note4.setContent("This is the first note, initialized by Startupconfig.");
@@ -77,7 +82,8 @@ public class StartUpConfig {
                 "user42",
                 "passpass",
                 List.of(note5),
-                List.of());
+                List.of(),
+                ENGLISH);
         note5.setUsers(List.of(user5));
         note5.setTitle("init note5");
         note5.setContent("This is the first note, initialized by Startupconfig.");
