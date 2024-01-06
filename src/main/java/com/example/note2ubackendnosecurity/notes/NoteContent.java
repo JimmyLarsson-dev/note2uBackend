@@ -6,6 +6,5 @@ import lombok.Data;
 public class NoteContent {
 
     private String item;
-    private boolean isDone;
-
+    private boolean hasBeenViewed;
 }

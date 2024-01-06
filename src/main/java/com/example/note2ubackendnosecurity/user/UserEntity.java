@@ -34,14 +34,14 @@ public class UserEntity {
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     private List<ChecklistEntity> checkLists;
 
-    private Languages language;
+    private String language;
 
 //    @ManyToMany(mappedBy = "user_id")
 //    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @OneToMany
     private List<UserEntity> blockedUsers;
 
-    public UserEntity(String email, String username, String password, List<NoteEntity> notes, List<UserEntity> blockedUsers, Languages language) {
+    public UserEntity(String email, String username, String password, List<NoteEntity> notes, List<UserEntity> blockedUsers, String language) {
         this.email = email;
         this.username = username;
         this.password = password;

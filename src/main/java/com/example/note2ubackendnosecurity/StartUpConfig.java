@@ -31,7 +31,7 @@ public class StartUpConfig {
                 "p",
                 List.of(note1),
                 List.of(),
-                SWEDISH);
+                "SWEDISH");
         note1.setUsers(List.of(user1));
         note1.setTitle("init note1");
         note1.setContent("This is the first note, initialized by Startupconfig.");
@@ -44,7 +44,7 @@ public class StartUpConfig {
                 "passpass",
                 List.of(note2),
                 List.of(),
-                SWEDISH);
+                "SWEDISH");
         note2.setUsers(List.of(user2));
         note2.setTitle("init note2");
         note2.setContent("This is the first note, initialized by Startupconfig.");
@@ -57,7 +57,7 @@ public class StartUpConfig {
                 "passpass",
                 List.of(note3),
                 List.of(),
-                SWEDISH);
+                "SWEDISH");
         note3.setUsers(List.of(user3));
         note3.setTitle("init note3");
         note3.setContent("This is the first note, initialized by Startupconfig.");
@@ -70,7 +70,7 @@ public class StartUpConfig {
                 "passpass",
                 List.of(note4),
                 List.of(),
-                ENGLISH);
+                "ENGLISH");
         note4.setUsers(List.of(user4));
         note4.setTitle("init note4");
         note4.setContent("This is the first note, initialized by Startupconfig.");
@@ -83,7 +83,7 @@ public class StartUpConfig {
                 "passpass",
                 List.of(note5),
                 List.of(),
-                ENGLISH);
+                "ENGLISH");
         note5.setUsers(List.of(user5));
         note5.setTitle("init note5");
         note5.setContent("This is the first note, initialized by Startupconfig.");

@@ -16,13 +16,15 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepo repo;
+    private final WelcomeNote welcomeNote;
 
-    public UserService(UserRepo repo) {
+    public UserService(UserRepo repo, WelcomeNote welcomeNote) {
         this.repo = repo;
+        this.welcomeNote = welcomeNote;
     }
 
     public RegisterResponse register(RegisterRequest request) {
-
+        String lang;
         //lägg till regex för att kolla mailen
 
         if (repo.findByEmail(request.getEmail()).isPresent()) {
@@ -31,7 +33,11 @@ public class UserService {
         if (repo.findByUsername(request.getUsername()).isPresent()) {
             throw new UserNameAlreadyExistsException("Username already registered");
         }
-        if(!request.getLanguage().equals("SWEDISH") && !request.getLanguage().equals("ENGLISH")) {
+        if(request.getLanguage().equals("SWEDISH")) {
+            lang = "swedish";
+        } else if (request.getLanguage().equals("ENGLISH")) {
+            lang = "english";
+        } else {
             throw new InvalidInputException("Unacceptable language option");
         }
 
@@ -41,11 +47,12 @@ public class UserService {
                 request.getPassword(),
                 List.of(),
                 List.of(),
-                request.getLanguage());
+                lang);
         NoteEntity noteEntity = new NoteEntity(
-                WelcomeNote.welcomeLable,
-                WelcomeNote.welcomeContent,
-                user, false);
+                welcomeNote.getWelcomeLable(lang),
+                welcomeNote.getWelcomeContent(lang),
+                user,
+                false);
 
         user.setNotes(List.of(noteEntity));
         repo.save(user);
