@@ -42,9 +42,12 @@ public class NoteController {
 
     @GetMapping("/getAllMyNotes")
     public List<GetNoteResponse> getAllMyNotes(@RequestHeader String id) throws NoteMissingException, NoteAccessMissingException, UserMissingException {
-
-        System.out.println("**********" + id);
         return noteService.getAllMyNotes(id);
+    }
+
+    @GetMapping("/getAllMyNotesAndChecklists")
+    public GetAllNotesAndChecklistsResponse getAllMyNotesAndChecklists(@RequestHeader String id) throws UserMissingException {
+        return noteService.getAllMyNotesAndChecklists(id);
     }
 
     @PatchMapping("/inviteUserByEmail")

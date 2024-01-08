@@ -1,5 +1,6 @@
 package com.example.note2ubackendnosecurity.notes;
 
+import com.example.note2ubackendnosecurity.checklist.ChecklistResponse;
 import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
 import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
@@ -93,7 +94,6 @@ public class NoteService {
 
         if (optionalUser.isEmpty()) {
             throw new UserMissingException("No such user!");
-
         }
 
         if (!optionalUser.get().getNotes().isEmpty()) {
@@ -195,5 +195,36 @@ public class NoteService {
                         .map(x -> x.getId())
                         .collect(Collectors.toList()),
                 note.isStatusBeenViewed());
+    }
+
+    public GetAllNotesAndChecklistsResponse getAllMyNotesAndChecklists(String id) throws UserMissingException {
+
+        Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(id));
+        if (optionalUser.isEmpty()) {
+            throw new UserMissingException("No such user!");
+        }
+        List<GetNoteResponse> getNoteList = new ArrayList<>();
+        List<ChecklistResponse> getCheckListList = new ArrayList<>();
+
+
+        if (!optionalUser.get().getNotes().isEmpty()) {
+//                optionalUser.get().getNotes()
+//                        .forEach(x -> dtoList.add(new GetNoteResponse(x.getId(), x.getTitle(), x.getContent(), x.getUsers())));
+            for (int i = 0; i < optionalUser.get().getNotes().size(); i++) {
+                getNoteList.add(new GetNoteResponse(optionalUser.get().getNotes().get(i).getId(),
+                        optionalUser.get().getNotes().get(i).getTitle(),
+                        optionalUser.get().getNotes().get(i).getContent(),
+                        optionalUser.get().getNotes().get(i).getUsers().stream().map(x -> x.getId()).collect(Collectors.toList()),
+                        optionalUser.get().getNotes().get(i).isStatusBeenViewed()
+                ));
+            }
+        }
+        if(!optionalUser.get().getCheckLists().isEmpty()) {
+            for(int i = 0; i < optionalUser.get().getCheckLists().size(); i++) {
+                getCheckListList.add(new ChecklistResponse())
+            }
+        }
+        return new GetAllNotesAndChecklistsResponse(getCheckListList, getNoteList);
+
     }
 }
