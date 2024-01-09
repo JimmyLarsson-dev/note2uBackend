@@ -42,20 +42,30 @@ public class ChecklistService {
         System.out.println("??????????????????2 " + checklistEntity.getTitle());
 //        System.out.println("??????????????????3 " + checklistEntity.getItemList().get(0));
         System.out.println("??????????????????4 " + checklistEntity.getUsers().get(0).getUsername());
-        System.out.println("??????????????????5 " + checklistEntity.isStatusBeenViewed());
+        System.out.println("??????????????????5 " + checklistEntity.isHasBeenViewed());
 
         checklistRepo.save(checklistEntity);
 //        optUser.get().getCheckLists().add(checklistEntity);
 //        userRepo.save(optUser.get());
-        return new ChecklistResponse(checklistEntity.getId().toString(), checklistEntity.getTitle());
+        return new ChecklistResponse(
+                checklistEntity.getId().toString(),
+                checklistEntity.getTitle(),
+                checklistEntity.getItemList(),
+                checklistEntity.getUsers(),
+                checklistEntity.isHasBeenViewed());
     }
 
     public ChecklistResponse updateChecklist(UpdateChecklistRequest request) throws UserMissingException {
         Optional<UserEntity> optUser = userRepo.findById(UUID.fromString(request.getUserId()));
+        Optional<ChecklistEntity> optionalChecklistEntity = checklistRepo.findById(UUID.fromString(request.getChecklistId()));
 
         if(optUser.isEmpty()) {
             throw new UserMissingException("No such user");
         }
+        if(optionalChecklistEntity.isEmpty()) {
+            throw new InvalidInputException("Invalid checklist id");
+        }
+
 
         if(optUser.get().getCheckLists()
                 .stream()
@@ -64,8 +74,13 @@ public class ChecklistService {
             throw new InvalidInputException("No such Checklist exists on this user");
         }
 
-        return new ChecklistResponse(request.getChecklistId(), request.getTitle());
-
+        return new ChecklistResponse(
+                request.getChecklistId(),
+                request.getTitle(),
+                request.getItemList(),
+                optionalChecklistEntity.get().getUsers(),
+                optionalChecklistEntity.get().isHasBeenViewed()
+                );
     }
 
     public ChecklistEntity getChecklist(GetChecklistRequest request) throws UserMissingException {

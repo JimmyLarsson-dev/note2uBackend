@@ -31,7 +31,7 @@ public class ChecklistEntity {
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "userId")
     private List<UserEntity> users;
-    private boolean statusBeenViewed;
+    private boolean hasBeenViewed;
 
     public ChecklistEntity(String title,
                            List<Item> itemList,
@@ -40,6 +40,6 @@ public class ChecklistEntity {
         this.title = title;
         this.itemList = itemList;
         this.users = List.of(user);
-        this.statusBeenViewed = statusHasBeenViewed;
+        this.hasBeenViewed = statusHasBeenViewed;
     }
 }

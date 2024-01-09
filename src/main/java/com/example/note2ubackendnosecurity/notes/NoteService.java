@@ -221,7 +221,14 @@ public class NoteService {
         }
         if(!optionalUser.get().getCheckLists().isEmpty()) {
             for(int i = 0; i < optionalUser.get().getCheckLists().size(); i++) {
-                getCheckListList.add(new ChecklistResponse())
+                getCheckListList.add(
+                        new ChecklistResponse(
+                                optionalUser.get().getCheckLists().get(i).getId().toString(),
+                                optionalUser.get().getCheckLists().get(i).getTitle(),
+                                optionalUser.get().getCheckLists().get(i).getItemList(),
+                                optionalUser.get().getCheckLists().get(i).getUsers(),
+                                optionalUser.get().getCheckLists().get(i).isHasBeenViewed()
+                        ));
             }
         }
         return new GetAllNotesAndChecklistsResponse(getCheckListList, getNoteList);
