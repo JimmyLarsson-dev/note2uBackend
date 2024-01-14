@@ -4,7 +4,9 @@ import com.example.note2ubackendnosecurity.user.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -13,6 +15,6 @@ public class ChecklistResponse {
     private String title;
     private List<Item> itemList;
     private List<UserEntity> users;
-    private boolean statusBeenViewed;
+    private UserViewedMap statusBeenViewed;
 }
 

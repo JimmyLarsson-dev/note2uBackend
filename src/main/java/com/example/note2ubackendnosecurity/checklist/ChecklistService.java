@@ -29,6 +29,10 @@ public class ChecklistService {
             throw new UserMissingException("No such user");
         }
 
+        UserViewedMap userViewedMap = new UserViewedMap(
+                UUID.fromString(request.getUserId()),
+                true);
+
         List<Item> itemList = new ArrayList<>();
         request.getItemList()
                 .forEach(item -> itemList.add(new Item(UUID.randomUUID(), item.getTitle(),item.isDone())));
@@ -37,12 +41,11 @@ public class ChecklistService {
                 request.getTitle(),
                 itemList,
                 optUser.get(),
-                false);
+                userViewedMap);
         System.out.println("??????????????????1 " + checklistEntity.getId());
         System.out.println("??????????????????2 " + checklistEntity.getTitle());
 //        System.out.println("??????????????????3 " + checklistEntity.getItemList().get(0));
         System.out.println("??????????????????4 " + checklistEntity.getUsers().get(0).getUsername());
-        System.out.println("??????????????????5 " + checklistEntity.isHasBeenViewed());
 
         checklistRepo.save(checklistEntity);
 //        optUser.get().getCheckLists().add(checklistEntity);
@@ -52,7 +55,7 @@ public class ChecklistService {
                 checklistEntity.getTitle(),
                 checklistEntity.getItemList(),
                 checklistEntity.getUsers(),
-                checklistEntity.isHasBeenViewed());
+                userViewedMap);
     }
 
     public ChecklistResponse updateChecklist(UpdateChecklistRequest request) throws UserMissingException {
@@ -79,8 +82,9 @@ public class ChecklistService {
                 request.getTitle(),
                 request.getItemList(),
                 optionalChecklistEntity.get().getUsers(),
-                optionalChecklistEntity.get().isHasBeenViewed()
-                );
+                new UserViewedMap(
+                        UUID.fromString(request.getUserId()),
+                        true));
     }
 
     public ChecklistEntity getChecklist(GetChecklistRequest request) throws UserMissingException {

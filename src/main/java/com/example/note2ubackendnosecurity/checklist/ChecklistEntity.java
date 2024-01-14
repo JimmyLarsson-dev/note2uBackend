@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,12 +32,16 @@ public class ChecklistEntity {
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "userId")
     private List<UserEntity> users;
-    private boolean hasBeenViewed;
+
+    @OneToOne
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "mapId")
+    private UserViewedMap hasBeenViewed;
 
     public ChecklistEntity(String title,
                            List<Item> itemList,
                            UserEntity user,
-                           boolean statusHasBeenViewed) {
+                           UserViewedMap statusHasBeenViewed) {
         this.title = title;
         this.itemList = itemList;
         this.users = List.of(user);

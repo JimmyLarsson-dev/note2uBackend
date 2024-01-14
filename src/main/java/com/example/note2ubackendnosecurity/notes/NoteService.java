@@ -227,7 +227,7 @@ public class NoteService {
                                 optionalUser.get().getCheckLists().get(i).getTitle(),
                                 optionalUser.get().getCheckLists().get(i).getItemList(),
                                 optionalUser.get().getCheckLists().get(i).getUsers(),
-                                optionalUser.get().getCheckLists().get(i).isHasBeenViewed()
+                                optionalUser.get().getCheckLists().get(i).getHasBeenViewed()
                         ));
             }
         }
