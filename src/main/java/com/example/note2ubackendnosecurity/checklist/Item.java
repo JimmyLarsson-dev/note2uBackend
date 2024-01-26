@@ -6,12 +6,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Data
 @Entity
 @AllArgsConstructor
+@NoArgsConstructor
 public class Item {
 
     @Id
@@ -19,6 +21,4 @@ public class Item {
     private String title;
     private boolean isDone;
 
-    public Item() {
-    }
 }
