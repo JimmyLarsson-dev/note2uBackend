@@ -1,6 +1,7 @@
 package com.example.note2ubackendnosecurity.user;
 
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
+import com.example.note2ubackendnosecurity.user.DTOs.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.CredentialException;

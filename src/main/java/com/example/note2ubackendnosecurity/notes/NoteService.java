@@ -5,6 +5,7 @@ import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
 import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
+import com.example.note2ubackendnosecurity.notes.DTOs.CreateNoteRequest;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
 import org.springframework.stereotype.Service;
@@ -26,33 +27,37 @@ public class NoteService {
         this.userRepo = userRepo;
     }
 
-    public String createNote(String title, String content, String userId) throws UserMissingException {
-        Optional<UserEntity> user = userRepo.findById(UUID.fromString(userId));
-        if (user.isPresent()) {
-            if (title == null) {
-                title = " ";
-            }
-
-            NoteEntity note = new NoteEntity(title, content, user.get(), false);
-            noteRepo.save(note);
-            return note.getId().toString();
-        } else {
+    public String createNote(CreateNoteRequest request) throws UserMissingException {
+        Optional<UserEntity> user = userRepo.findById(UUID.fromString(request.getUserId()));
+        if (user.isEmpty()) {
             throw new UserMissingException("No such user!");
         }
+        if (request.getTitle() == null) {
+            request.setTitle(" ");
+        }
+        return createNoteAndReturnNoteId(request, user);
     }
 
-    public String editNote(String noteId, String userId, String title, String content) throws NoteAccessMissingException, NoteMissingException {
-        Optional<NoteEntity> optNote = noteRepo.findById(UUID.fromString(noteId));
-        if (optNote.isPresent()) {
-            if (userRepo.existsByIdAndNotesContains(UUID.fromString(userId), optNote.get())) {
-                optNote.get().setTitle(title);
-                optNote.get().setContent(content);
-                return "Note updated!";
-            } else {
-                throw new NoteAccessMissingException("User does not have access to that note!");
-            }
-        } else {
+    private String createNoteAndReturnNoteId(CreateNoteRequest request, Optional<UserEntity> user) {
+        NoteEntity note = new NoteEntity(request.getTitle(), request.getContent(), user.get(), false);
+        noteRepo.save(note);
+        return note.getId().toString();
+    }
+
+    public String editNote(EditNoteRequest request) throws NoteAccessMissingException, NoteMissingException {
+        Optional<NoteEntity> optNote = noteRepo.findById(UUID.fromString(request.getNoteId()));
+        checkNoteExistsAndUserHasAccess(request.getUserId(), optNote);
+        optNote.get().setTitle(request.getTitle());
+            optNote.get().setContent(request.getContent());
+            return "Note updated!";
+    }
+
+    private void checkNoteExistsAndUserHasAccess(String userId, Optional<NoteEntity> optNote) throws NoteMissingException, NoteAccessMissingException {
+        if (optNote.isEmpty()) {
             throw new NoteMissingException("No such note found!");
+        }
+        if (!userRepo.existsByIdAndNotesContains(UUID.fromString(userId), optNote.get())) {
+            throw new NoteAccessMissingException("User does not have access to that note!");
         }
     }
 
@@ -219,8 +224,8 @@ public class NoteService {
                 ));
             }
         }
-        if(!optionalUser.get().getCheckLists().isEmpty()) {
-            for(int i = 0; i < optionalUser.get().getCheckLists().size(); i++) {
+        if (!optionalUser.get().getCheckLists().isEmpty()) {
+            for (int i = 0; i < optionalUser.get().getCheckLists().size(); i++) {
                 getCheckListList.add(
                         new ChecklistResponse(
                                 optionalUser.get().getCheckLists().get(i).getId().toString(),

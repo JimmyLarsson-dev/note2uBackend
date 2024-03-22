@@ -5,7 +5,6 @@ import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +29,7 @@ public class ChecklistService {
         }
 
         UserViewedMap userViewedMap = new UserViewedMap(
+                UUID.randomUUID(),
                 UUID.fromString(request.getUserId()),
                 true);
 
@@ -42,14 +42,9 @@ public class ChecklistService {
                 itemList,
                 optUser.get(),
                 userViewedMap);
-        System.out.println("??????????????????1 " + checklistEntity.getId());
-        System.out.println("??????????????????2 " + checklistEntity.getTitle());
-//        System.out.println("??????????????????3 " + checklistEntity.getItemList().get(0));
-        System.out.println("??????????????????4 " + checklistEntity.getUsers().get(0).getUsername());
 
         checklistRepo.save(checklistEntity);
-//        optUser.get().getCheckLists().add(checklistEntity);
-//        userRepo.save(optUser.get());
+
         return new ChecklistResponse(
                 checklistEntity.getId().toString(),
                 checklistEntity.getTitle(),

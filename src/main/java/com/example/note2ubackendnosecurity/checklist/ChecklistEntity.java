@@ -47,4 +47,16 @@ public class ChecklistEntity {
         this.users = List.of(user);
         this.hasBeenViewed = statusHasBeenViewed;
     }
+
+    public ChecklistEntity(UUID id,
+                           String title,
+                           List<Item> itemList,
+                           List<UserEntity> users,
+                           UserViewedMap hasBeenViewed) {
+        this.id = id;
+        this.title = title;
+        this.itemList = itemList;
+        this.users = users;
+        this.hasBeenViewed = hasBeenViewed;
+    }
 }

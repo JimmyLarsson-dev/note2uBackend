@@ -1,5 +1,9 @@
 package com.example.note2ubackendnosecurity;
 
+import com.example.note2ubackendnosecurity.checklist.ChecklistEntity;
+import com.example.note2ubackendnosecurity.checklist.ChecklistRepo;
+import com.example.note2ubackendnosecurity.checklist.Item;
+import com.example.note2ubackendnosecurity.checklist.UserViewedMap;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
 import com.example.note2ubackendnosecurity.notes.NoteRepo;
 import com.example.note2ubackendnosecurity.user.UserEntity;
@@ -8,22 +12,28 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
 import java.util.List;
-import static com.example.note2ubackendnosecurity.other.Languages.*;
+import java.util.UUID;
 
 @Configuration
 public class StartUpConfig {
 
+    //Den här klassen används för att skapa några poster i databasen för att
+    // ha något att jobba med under utvecklingen
+
     private final UserRepo userRepo;
     private final NoteRepo noteRepo;
+    private final ChecklistRepo checklistRepo;
 
-    public StartUpConfig(UserRepo userRepo, NoteRepo noteRepo) {
+    public StartUpConfig(UserRepo userRepo, NoteRepo noteRepo, ChecklistRepo checklistRepo) {
         this.userRepo = userRepo;
         this.noteRepo = noteRepo;
+        this.checklistRepo = checklistRepo;
     }
 
     @Bean
-    public CommandLineRunner autoCreateUsers() {
+    public void autoCreateUsers() {
         NoteEntity note1 = new NoteEntity();
         UserEntity user1 = new UserEntity(
                 "j@m.com",
@@ -95,12 +105,62 @@ public class StartUpConfig {
         noteRepo.save(note4);
         noteRepo.save(note5);
 
-        return args -> {
-            userRepo.save(user1);
-            userRepo.save(user2);
-            userRepo.save(user3);
-            userRepo.save(user4);
-            userRepo.save(user5);
-        };
+        Item item1 = new Item(UUID.randomUUID(), "buy apples", false);
+        Item item2 = new Item(UUID.randomUUID(), "clean living room", false);
+        Item item3 = new Item(UUID.randomUUID(), "shave cat", false);
+
+
+        List<Item> itemList1 = List.of(item1, item2, item3);
+        List<Item> itemList2 = List.of(item2, item3, item1);
+        List<Item> itemList3 = List.of(item3, item1);
+
+        UserViewedMap userViewedMap1 = new UserViewedMap(user1.getId(), false);
+        UserViewedMap userViewedMap2 = new UserViewedMap(user2.getId(), false);
+        UserViewedMap userViewedMap3 = new UserViewedMap(user1.getId(), false);
+
+        ChecklistEntity checklist1 = new ChecklistEntity(
+                UUID.randomUUID(),
+                "Initial checklist 1",
+                itemList1,
+                List.of(user1),
+                userViewedMap1);
+        ChecklistEntity checklist2 = new ChecklistEntity(
+                UUID.randomUUID(),
+                "initial checklist 2",
+                itemList2,
+                List.of(user1),
+                userViewedMap2);
+        ChecklistEntity checklist3 = new ChecklistEntity(
+                UUID.randomUUID(),
+                "initial checklist 3",
+                itemList3,
+                List.of(user1),
+                userViewedMap3);
+
+        checklist1.getHasBeenViewed().setUserId(user1.getId());
+        checklist1.getHasBeenViewed().setNoteOrChecklistId(checklist1.getId());
+        checklist1.getHasBeenViewed().setHasUserViewed(false);
+        checklist1.getHasBeenViewed().setMapId(UUID.randomUUID());
+
+        checklist2.getHasBeenViewed().setUserId(user1.getId());
+        checklist2.getHasBeenViewed().setNoteOrChecklistId(checklist2.getId());
+        checklist2.getHasBeenViewed().setHasUserViewed(false);
+        checklist2.getHasBeenViewed().setMapId(UUID.randomUUID());
+
+        checklist3.getHasBeenViewed().setUserId(user1.getId());
+        checklist3.getHasBeenViewed().setNoteOrChecklistId(checklist3.getId());
+        checklist3.getHasBeenViewed().setHasUserViewed(false);
+        checklist3.getHasBeenViewed().setMapId(UUID.randomUUID());
+
+        userRepo.save(user1);
+        userRepo.save(user2);
+        userRepo.save(user3);
+        userRepo.save(user4);
+        userRepo.save(user5);
+
+        checklistRepo.save(checklist1);
+        checklistRepo.save(checklist2);
+        checklistRepo.save(checklist3);
+
     }
 }

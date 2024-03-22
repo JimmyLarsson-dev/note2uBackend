@@ -1,4 +1,4 @@
-package com.example.note2ubackendnosecurity.user;
+package com.example.note2ubackendnosecurity.user.DTOs;
 
 import lombok.Data;
 

@@ -6,6 +6,7 @@ import com.example.note2ubackendnosecurity.exceptions.UserNameAlreadyExistsExcep
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.other.WelcomeNote;
+import com.example.note2ubackendnosecurity.user.DTOs.*;
 import org.springframework.stereotype.Service;
 import javax.security.auth.login.CredentialException;
 import java.util.List;
@@ -24,49 +25,64 @@ public class UserService {
     }
 
     public RegisterResponse register(RegisterRequest request) {
-        String lang;
-        //lägg till regex för att kolla mailen
+        //lägg till regex för att kolla mailen? Eller hantera det med Keycloak?
 
-        if (repo.findByEmail(request.getEmail()).isPresent()) {
-            throw new UserAlreadyRegisteredException("Email already registered");
-        }
-        if (repo.findByUsername(request.getUsername()).isPresent()) {
-            throw new UserNameAlreadyExistsException("Username already registered");
-        }
-        if(request.getLanguage().equals("SWEDISH")) {
-            lang = "swedish";
-        } else if (request.getLanguage().equals("ENGLISH")) {
-            lang = "english";
-        } else {
-            throw new InvalidInputException("Unacceptable language option");
-        }
+        checkIfAlreadyRegistered(request);
+        UserEntity user = createUserEntity(request);
+        NoteEntity noteEntity = createNoteEntity(user);
+        user.setNotes(List.of(noteEntity));
+        repo.save(user);
+        return createRegisterResponse(user);
+    }
 
+    private NoteEntity createNoteEntity(UserEntity user) {
+        return new NoteEntity(
+                welcomeNote.getWelcomeLable(user.getLanguage()),
+                welcomeNote.getWelcomeContent(user.getLanguage()),
+                user,
+                false);
+    }
+
+    private static RegisterResponse createRegisterResponse(UserEntity user) {
+        return new RegisterResponse(
+                user.getId().toString(),
+                user.getUsername(),
+                user.getEmail()
+        );
+    }
+
+    private static UserEntity createUserEntity(RegisterRequest request) {
         UserEntity user = new UserEntity(
                 request.getEmail(),
                 request.getUsername(),
                 request.getPassword(),
                 List.of(),
                 List.of(),
-                lang);
-        NoteEntity noteEntity = new NoteEntity(
-                welcomeNote.getWelcomeLable(lang),
-                welcomeNote.getWelcomeContent(lang),
-                user,
-                false);
+                selectLanguage(request));
+        return user;
+    }
 
-        user.setNotes(List.of(noteEntity));
-        repo.save(user);
+    private static String selectLanguage(RegisterRequest request) {
+        if(request.getLanguage().equals("SWEDISH")) {
+            return "swedish";
+        } else if (request.getLanguage().equals("ENGLISH")) {
+            return "english";
+        } else {
+            throw new InvalidInputException("Unacceptable language option");
+        }
+    }
 
-        return new RegisterResponse(
-                user.getId().toString(),
-                user.getUsername(),
-                user.getEmail()
-                );
+    private void checkIfAlreadyRegistered(RegisterRequest request) {
+        if (repo.findByEmail(request.getEmail()).isPresent()) {
+            throw new UserAlreadyRegisteredException("Email already registered");
+        }
+        if (repo.findByUsername(request.getUsername()).isPresent()) {
+            throw new UserNameAlreadyExistsException("Username already registered");
+        }
     }
 
     public LoginResponse login(LoginRequest request) throws CredentialException, UserMissingException {
         Optional<UserEntity> optionalUser = repo.findByUsername(request.getUsername());
-
         if (optionalUser.isPresent()) {
             if (optionalUser.get().getPassword().equals(request.getPassword())) {
                 return new LoginResponse(
@@ -83,31 +99,26 @@ public class UserService {
     }
 
     public String blockUser(BlockRequest request) throws UserMissingException {
-        UserEntity user = checkUsersExist(request);
+        UserEntity user = checkUsersExistAndReturnCallingUser(request);
         user.getBlockedUsers().add(repo.findByEmail(request.getBlockedUserEmail()).get());
-
         repo.save(user);
-
         return "User with email " + request.getBlockedUserEmail() + " has been blocked.";
     }
 
     public String unblockUser(BlockRequest request) throws UserMissingException {
-        UserEntity user = checkUsersExist(request);
+        UserEntity user = checkUsersExistAndReturnCallingUser(request);
         user.getBlockedUsers().remove(repo.findByEmail(request.getBlockedUserEmail()).get());
-
         repo.save(user);
-
         return "User has been unblocked";
     }
 
-    private UserEntity checkUsersExist(BlockRequest request) throws UserMissingException {
+    private UserEntity checkUsersExistAndReturnCallingUser(BlockRequest request) throws UserMissingException {
         if(repo.findById(UUID.fromString(request.getCallingUserId())).isEmpty()) {
             throw new UserMissingException("No such user found in database");
         }
         if(repo.findByEmail(request.getBlockedUserEmail()).isEmpty()) {
             throw new UserMissingException("Cannot find user, unable to block.");
         }
-
         return repo.findById(UUID.fromString(request.getCallingUserId())).get();
     }
 }
