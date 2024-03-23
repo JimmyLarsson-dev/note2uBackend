@@ -1,4 +1,4 @@
-package com.example.note2ubackendnosecurity.other;
+package com.example.note2ubackendnosecurity.utilities;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

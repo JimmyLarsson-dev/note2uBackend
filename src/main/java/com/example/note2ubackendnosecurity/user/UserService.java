@@ -5,7 +5,7 @@ import com.example.note2ubackendnosecurity.exceptions.UserAlreadyRegisteredExcep
 import com.example.note2ubackendnosecurity.exceptions.UserNameAlreadyExistsException;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
-import com.example.note2ubackendnosecurity.other.WelcomeNote;
+import com.example.note2ubackendnosecurity.utilities.WelcomeNote;
 import com.example.note2ubackendnosecurity.user.DTOs.*;
 import org.springframework.stereotype.Service;
 import javax.security.auth.login.CredentialException;

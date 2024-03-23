@@ -3,9 +3,9 @@ package com.example.note2ubackendnosecurity.notes;
 import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
+import com.example.note2ubackendnosecurity.notes.DTOs.CreateNoteRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -22,17 +22,17 @@ public class NoteController {
 
     @PostMapping("/createNote")
     public String createNote(@RequestBody CreateNoteRequest request) throws UserMissingException {
-        return noteService.createNote(request.getTitle(), request.getContent(), request.getUserId());
+        return noteService.createNote(request);
     }
 
     @PutMapping("/editNote")
     public String editNote(@RequestBody EditNoteRequest request) throws NoteAccessMissingException, NoteMissingException {
-        return noteService.editNote(request.getNoteId(), request.getUserId(), request.getTitle(), request.getContent());
+        return noteService.editNote(request);
     }
 
     @DeleteMapping("/deleteNote")
     public String deleteNote(@RequestBody EditNoteRequest request) throws NoteMissingException, NoteAccessMissingException {
-        return noteService.deleteNote(request.getNoteId(), request.getUserId(), request.getTitle(), request.getContent());
+        return noteService.deleteNote(request.getNoteId(), request.getUserId());
     }
 
     @GetMapping("/getNote")
@@ -41,8 +41,8 @@ public class NoteController {
     }
 
     @GetMapping("/getAllMyNotes")
-    public List<GetNoteResponse> getAllMyNotes(@RequestHeader String id) throws NoteMissingException, NoteAccessMissingException, UserMissingException {
-        return noteService.getAllMyNotes(id);
+    public List<GetNoteResponse> getAllMyNotes(@RequestHeader String userId) throws NoteMissingException, NoteAccessMissingException, UserMissingException {
+        return noteService.getAllMyNotes(userId);
     }
 
     @GetMapping("/getAllMyNotesAndChecklists")

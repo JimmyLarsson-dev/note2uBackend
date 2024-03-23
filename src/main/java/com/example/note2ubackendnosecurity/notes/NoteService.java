@@ -8,6 +8,7 @@ import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.notes.DTOs.CreateNoteRequest;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
+import com.example.note2ubackendnosecurity.utilities.CheckUserInput;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,17 +22,17 @@ public class NoteService {
 
     private final NoteRepo noteRepo;
     private final UserRepo userRepo;
+    private final CheckUserInput checkUserInput;
 
-    public NoteService(NoteRepo noteRepo, UserRepo userRepo) {
+    public NoteService(NoteRepo noteRepo, UserRepo userRepo, CheckUserInput checkUserInput) {
         this.noteRepo = noteRepo;
         this.userRepo = userRepo;
+        this.checkUserInput = checkUserInput;
     }
 
     public String createNote(CreateNoteRequest request) throws UserMissingException {
+        checkUserInput.checkIfUserExists(request.getUserId());
         Optional<UserEntity> user = userRepo.findById(UUID.fromString(request.getUserId()));
-        if (user.isEmpty()) {
-            throw new UserMissingException("No such user!");
-        }
         if (request.getTitle() == null) {
             request.setTitle(" ");
         }
@@ -45,66 +46,35 @@ public class NoteService {
     }
 
     public String editNote(EditNoteRequest request) throws NoteAccessMissingException, NoteMissingException {
+        checkUserInput.checkNoteExistsAndUserHasAccess(request.getUserId(), request.getNoteId());
         Optional<NoteEntity> optNote = noteRepo.findById(UUID.fromString(request.getNoteId()));
-        checkNoteExistsAndUserHasAccess(request.getUserId(), optNote);
         optNote.get().setTitle(request.getTitle());
-            optNote.get().setContent(request.getContent());
-            return "Note updated!";
+        optNote.get().setContent(request.getContent());
+        noteRepo.save(optNote.get());
+        return "Note updated!";
     }
 
-    private void checkNoteExistsAndUserHasAccess(String userId, Optional<NoteEntity> optNote) throws NoteMissingException, NoteAccessMissingException {
-        if (optNote.isEmpty()) {
-            throw new NoteMissingException("No such note found!");
-        }
-        if (!userRepo.existsByIdAndNotesContains(UUID.fromString(userId), optNote.get())) {
-            throw new NoteAccessMissingException("User does not have access to that note!");
-        }
-    }
-
-    public String deleteNote(String noteId, String userId, String title, String content) throws NoteAccessMissingException, NoteMissingException {
-        Optional<NoteEntity> optNote = noteRepo.findById(UUID.fromString(noteId));
-        if (optNote.isPresent()) {
-            if (userRepo.existsByIdAndNotesContains(UUID.fromString(userId), optNote.get())) {
-                noteRepo.delete(optNote.get());
-                return "Note deleted!";
-            } else {
-                throw new NoteAccessMissingException("User does not have access to that note!");
-            }
-        } else {
-            throw new NoteMissingException("No such note found!");
-        }
+    public String deleteNote(String noteId, String userId) throws NoteAccessMissingException, NoteMissingException {
+        checkUserInput.checkNoteExistsAndUserHasAccess(userId, noteId);
+        noteRepo.delete(noteRepo.getReferenceById(UUID.fromString(noteId)));
+        return "Note deleted!";
     }
 
     public GetNoteResponse getNote(GetNoteRequest getNoteRequest) throws NoteMissingException, NoteAccessMissingException {
         Optional<NoteEntity> optionalNote = noteRepo.findById(UUID.fromString(getNoteRequest.getNoteId()));
-
-        if (optionalNote.isPresent()) {
-
-            if (optionalNote.get().getUsers().contains(
-                    userRepo.findById(UUID.fromString(getNoteRequest.getUserId())).get())) {
-                return entityToDto(optionalNote.get());
-            } else {
-                throw new NoteAccessMissingException("You do not have access to that note");
-            }
-        } else {
-            throw new NoteMissingException("That note does not exist");
-        }
+        checkUserInput.checkNoteExistsAndUserHasAccess(getNoteRequest.getUserId(), getNoteRequest.getNoteId());
+        return entityToDto(optionalNote.get());
     }
 
-    public List<GetNoteResponse> getAllMyNotes(String id) throws UserMissingException {
+    public List<GetNoteResponse> getAllMyNotes(String userId) throws UserMissingException {
+        checkUserInput.checkIfUserExists(userId);
+        Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(userId));
+        return getNoteResponseListFromUserId(optionalUser);
+    }
 
-        Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(id));
-
+    private static List<GetNoteResponse> getNoteResponseListFromUserId(Optional<UserEntity> optionalUser) {
         List<GetNoteResponse> dtoList = new ArrayList<>();
-
-        if (optionalUser.isEmpty()) {
-            throw new UserMissingException("No such user!");
-        }
-
         if (!optionalUser.get().getNotes().isEmpty()) {
-//                optionalUser.get().getNotes()
-//                        .forEach(x -> dtoList.add(new GetNoteResponse(x.getId(), x.getTitle(), x.getContent(), x.getUsers())));
-
             for (int i = 0; i < optionalUser.get().getNotes().size(); i++) {
                 dtoList.add(new GetNoteResponse(optionalUser.get().getNotes().get(i).getId(),
                         optionalUser.get().getNotes().get(i).getTitle(),
@@ -117,53 +87,34 @@ public class NoteService {
         return dtoList;
     }
 
-    //byt till throw istället för att returnera strängar vid fel. Blir lättare att tolka fel i frontend då
     public String inviteUserByEmail(InvitationRequest request) throws UserMissingException, NoteMissingException {
+        checkUserInput.checkIfUserExists(request.getInviterId());
+        checkUserInput.checkIfNoteExists(request.getNoteId());
+        checkUserInput.checkEmailFormat(request.getRecipientEmail());
 
-        if (!userRepo.existsById(UUID.fromString(request.getInviterId()))) {
-            throw new UserMissingException("Invalid user request");
+        Optional<UserEntity> optUserRecipient = userRepo.findByEmail(request.getRecipientEmail());
+        if (optUserRecipient.isEmpty()) {
+            throw new UserMissingException("Recipient not found!");
+        }
+        List<UserEntity> blockedList = optUserRecipient.get().getBlockedUsers()
+                .stream()
+                .filter(x -> x.getId().toString().equals(request.getInviterId()))
+                .toList();
+        if (!blockedList.isEmpty()) {
+            return "blocked";
         }
 
-        if (!noteRepo.existsById(UUID.fromString(request.getNoteId()))) {
-            throw new NoteMissingException("No such note found");
-        }
-
-        //lägg till regex för att kolla email
-        if (!request.getRecipientEmail().isEmpty()) {
-            Optional<UserEntity> optUserRecipient = userRepo.findByEmail(request.getRecipientEmail());
-
-            if (optUserRecipient.isPresent()) {
-                List<UserEntity> blockedList = optUserRecipient.get().getBlockedUsers()
-                        .stream()
-                        .filter(x -> x.getId().toString().equals(request.getInviterId()))
-                        .toList();
-                if (!blockedList.isEmpty()) {
-                    return "blocked";
-                } else {
-                    //här borde en förfrågan gå ut till mottagaren, istället för att bara lägga till note.
-                    optUserRecipient.get().getNotes().add(noteRepo.findById(UUID.fromString(request.getNoteId())).get());
-                    NoteEntity note = noteRepo.findById(UUID.fromString(request.getNoteId())).get();
-                    note.getUsers().add(optUserRecipient.get());
-                    return "Note sent!";
-                }
-            } else {
-                throw new UserMissingException("Recipient not found!");
-            }
-        } else {
-            throw new InvalidInputException("Invalid email format");
-        }
+        //här borde en förfrågan gå ut till mottagaren, istället för att bara lägga till note.
+        optUserRecipient.get().getNotes().add(noteRepo.findById(UUID.fromString(request.getNoteId())).get());
+        NoteEntity note = noteRepo.findById(UUID.fromString(request.getNoteId())).get();
+        note.getUsers().add(optUserRecipient.get());
+        return "Note sent!";
     }
 
-    //byt till throw istället för att returnera strängar vid fel. Blir lättare att tolka fel i frontend då
     public String inviteUserByUsername(InvitationRequest request) throws UserMissingException, NoteMissingException {
+        checkUserInput.checkIfUserExists(request.getInviterId());
+        checkUserInput.checkIfNoteExists(request.getNoteId());
 
-        if (!userRepo.existsById(UUID.fromString(request.getInviterId()))) {
-            throw new UserMissingException("Invalid user request");
-        }
-
-        if (!noteRepo.existsById(UUID.fromString(request.getNoteId()))) {
-            throw new NoteMissingException("No such note found");
-        }
 //Lägg till regex för att kolla username
         if (!request.getRecipientUsername().isEmpty()) {
             Optional<UserEntity> optUserRecipient = userRepo.findByUsername(request.getRecipientEmail());

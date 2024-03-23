@@ -2,7 +2,6 @@ package com.example.note2ubackendnosecurity.user;
 
 import com.example.note2ubackendnosecurity.checklist.ChecklistEntity;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
-import com.example.note2ubackendnosecurity.other.Languages;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
