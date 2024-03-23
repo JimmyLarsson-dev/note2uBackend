@@ -5,7 +5,7 @@ import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
 import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
-import com.example.note2ubackendnosecurity.notes.DTOs.CreateNoteRequest;
+import com.example.note2ubackendnosecurity.notes.DTOs.*;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
 import com.example.note2ubackendnosecurity.utilities.CheckUserInput;

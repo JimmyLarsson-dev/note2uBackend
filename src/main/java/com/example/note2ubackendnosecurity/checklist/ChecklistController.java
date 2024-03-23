@@ -15,7 +15,6 @@ public class ChecklistController {
 
     @PostMapping("/createChecklist")
     public ChecklistResponse createCheckList(@RequestBody CreateChecklistRequest request) throws UserMissingException, InterruptedException {
-
         return checklistService.createChecklist(request);
     }
 
@@ -28,5 +27,4 @@ public class ChecklistController {
     public ChecklistEntity getChecklist(@RequestBody GetChecklistRequest request) throws UserMissingException {
         return checklistService.getChecklist(request);
     }
-
 }
