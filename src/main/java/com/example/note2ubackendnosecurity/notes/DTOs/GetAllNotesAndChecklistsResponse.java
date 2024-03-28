@@ -1,6 +1,5 @@
-package com.example.note2ubackendnosecurity.notes;
+package com.example.note2ubackendnosecurity.notes.DTOs;
 
-import com.example.note2ubackendnosecurity.checklist.ChecklistEntity;
 import com.example.note2ubackendnosecurity.checklist.ChecklistResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;

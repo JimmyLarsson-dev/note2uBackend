@@ -3,7 +3,7 @@ package com.example.note2ubackendnosecurity.notes;
 import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
-import com.example.note2ubackendnosecurity.notes.DTOs.CreateNoteRequest;
+import com.example.note2ubackendnosecurity.notes.DTOs.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;

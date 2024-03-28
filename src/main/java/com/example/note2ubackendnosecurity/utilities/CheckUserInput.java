@@ -33,8 +33,7 @@ public class CheckUserInput {
         }
     }
 
-    public void checkNoteExistsAndUserHasAccess(String userId, String noteId) throws NoteMissingException, NoteAccessMissingException {
-        checkIfNoteExists(noteId);
+    public void checkUserHasAccess(String userId, String noteId) throws NoteAccessMissingException {
         if (!userRepo.existsByIdAndNotesContains(UUID.fromString(userId), noteRepo.getReferenceById(UUID.fromString(noteId)) )) {
             throw new NoteAccessMissingException("User does not have access to that note!");
         }

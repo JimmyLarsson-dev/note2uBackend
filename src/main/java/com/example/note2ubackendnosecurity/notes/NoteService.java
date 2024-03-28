@@ -5,12 +5,12 @@ import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
 import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
-import com.example.note2ubackendnosecurity.notes.DTOs.CreateNoteRequest;
+import com.example.note2ubackendnosecurity.notes.DTOs.*;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
 import com.example.note2ubackendnosecurity.utilities.CheckUserInput;
+import com.example.note2ubackendnosecurity.utilities.EntityToDtoConverter;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,11 +23,16 @@ public class NoteService {
     private final NoteRepo noteRepo;
     private final UserRepo userRepo;
     private final CheckUserInput checkUserInput;
+    private final EntityToDtoConverter entityToDtoConverter;
 
-    public NoteService(NoteRepo noteRepo, UserRepo userRepo, CheckUserInput checkUserInput) {
+    public NoteService(NoteRepo noteRepo,
+                       UserRepo userRepo,
+                       CheckUserInput checkUserInput,
+                       EntityToDtoConverter entityToDtoConverter) {
         this.noteRepo = noteRepo;
         this.userRepo = userRepo;
         this.checkUserInput = checkUserInput;
+        this.entityToDtoConverter = entityToDtoConverter;
     }
 
     public String createNote(CreateNoteRequest request) throws UserMissingException {
@@ -46,8 +51,9 @@ public class NoteService {
     }
 
     public String editNote(EditNoteRequest request) throws NoteAccessMissingException, NoteMissingException {
-        checkUserInput.checkNoteExistsAndUserHasAccess(request.getUserId(), request.getNoteId());
         Optional<NoteEntity> optNote = noteRepo.findById(UUID.fromString(request.getNoteId()));
+        checkUserInput.checkIfNoteExists(request.getNoteId());
+        checkUserInput.checkUserHasAccess(request.getUserId(), request.getNoteId());
         optNote.get().setTitle(request.getTitle());
         optNote.get().setContent(request.getContent());
         noteRepo.save(optNote.get());
@@ -55,36 +61,23 @@ public class NoteService {
     }
 
     public String deleteNote(String noteId, String userId) throws NoteAccessMissingException, NoteMissingException {
-        checkUserInput.checkNoteExistsAndUserHasAccess(userId, noteId);
+        checkUserInput.checkIfNoteExists(noteId);
+        checkUserInput.checkUserHasAccess(userId, noteId);
         noteRepo.delete(noteRepo.getReferenceById(UUID.fromString(noteId)));
         return "Note deleted!";
     }
 
     public GetNoteResponse getNote(GetNoteRequest getNoteRequest) throws NoteMissingException, NoteAccessMissingException {
         Optional<NoteEntity> optionalNote = noteRepo.findById(UUID.fromString(getNoteRequest.getNoteId()));
-        checkUserInput.checkNoteExistsAndUserHasAccess(getNoteRequest.getUserId(), getNoteRequest.getNoteId());
-        return entityToDto(optionalNote.get());
+        checkUserInput.checkIfNoteExists(getNoteRequest.getNoteId());
+        checkUserInput.checkUserHasAccess(getNoteRequest.getUserId(), getNoteRequest.getNoteId());
+        return entityToDtoConverter.convertNoteToGetNoteResponse(optionalNote.get());
     }
 
     public List<GetNoteResponse> getAllMyNotes(String userId) throws UserMissingException {
         checkUserInput.checkIfUserExists(userId);
         Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(userId));
-        return getNoteResponseListFromUserId(optionalUser);
-    }
-
-    private static List<GetNoteResponse> getNoteResponseListFromUserId(Optional<UserEntity> optionalUser) {
-        List<GetNoteResponse> dtoList = new ArrayList<>();
-        if (!optionalUser.get().getNotes().isEmpty()) {
-            for (int i = 0; i < optionalUser.get().getNotes().size(); i++) {
-                dtoList.add(new GetNoteResponse(optionalUser.get().getNotes().get(i).getId(),
-                        optionalUser.get().getNotes().get(i).getTitle(),
-                        optionalUser.get().getNotes().get(i).getContent(),
-                        optionalUser.get().getNotes().get(i).getUsers().stream().map(x -> x.getId()).collect(Collectors.toList()),
-                        optionalUser.get().getNotes().get(i).isStatusBeenViewed()
-                ));
-            }
-        }
-        return dtoList;
+        return entityToDtoConverter.getNoteResponseListFromUserId(optionalUser);
     }
 
     public String inviteUserByEmail(InvitationRequest request) throws UserMissingException, NoteMissingException {
@@ -92,11 +85,12 @@ public class NoteService {
         checkUserInput.checkIfNoteExists(request.getNoteId());
         checkUserInput.checkEmailFormat(request.getRecipientEmail());
 
-        Optional<UserEntity> optUserRecipient = userRepo.findByEmail(request.getRecipientEmail());
-        if (optUserRecipient.isEmpty()) {
+        Optional<UserEntity> recipientUser = userRepo.findByEmail(request.getRecipientEmail());
+        if (recipientUser.isEmpty()) {
             throw new UserMissingException("Recipient not found!");
         }
-        List<UserEntity> blockedList = optUserRecipient.get().getBlockedUsers()
+
+        List<UserEntity> blockedList = recipientUser.get().getBlockedUsers()
                 .stream()
                 .filter(x -> x.getId().toString().equals(request.getInviterId()))
                 .toList();
@@ -105,9 +99,9 @@ public class NoteService {
         }
 
         //här borde en förfrågan gå ut till mottagaren, istället för att bara lägga till note.
-        optUserRecipient.get().getNotes().add(noteRepo.findById(UUID.fromString(request.getNoteId())).get());
+        recipientUser.get().getNotes().add(noteRepo.findById(UUID.fromString(request.getNoteId())).get());
         NoteEntity note = noteRepo.findById(UUID.fromString(request.getNoteId())).get();
-        note.getUsers().add(optUserRecipient.get());
+        note.getUsers().add(recipientUser.get());
         return "Note sent!";
     }
 
@@ -141,17 +135,7 @@ public class NoteService {
         }
     }
 
-    private GetNoteResponse entityToDto(NoteEntity note) {
-        return new GetNoteResponse(
-                note.getId(),
-                note.getTitle(),
-                note.getContent(),
-                note.getUsers()
-                        .stream()
-                        .map(x -> x.getId())
-                        .collect(Collectors.toList()),
-                note.isStatusBeenViewed());
-    }
+
 
     public GetAllNotesAndChecklistsResponse getAllMyNotesAndChecklists(String id) throws UserMissingException {
 
