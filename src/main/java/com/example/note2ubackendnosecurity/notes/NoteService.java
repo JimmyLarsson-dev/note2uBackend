@@ -1,5 +1,7 @@
 package com.example.note2ubackendnosecurity.notes;
 
+import com.example.note2ubackendnosecurity.acceptNoteQuery.AcceptNoteQuery;
+import com.example.note2ubackendnosecurity.acceptNoteQuery.AcceptNoteQueryRepo;
 import com.example.note2ubackendnosecurity.checklist.ChecklistResponse;
 import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
 import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
@@ -24,15 +26,18 @@ public class NoteService {
     private final UserRepo userRepo;
     private final CheckUserInput checkUserInput;
     private final EntityToDtoConverter entityToDtoConverter;
+    private final AcceptNoteQueryRepo acceptNoteQueryRepo;
 
     public NoteService(NoteRepo noteRepo,
                        UserRepo userRepo,
                        CheckUserInput checkUserInput,
-                       EntityToDtoConverter entityToDtoConverter) {
+                       EntityToDtoConverter entityToDtoConverter,
+                       AcceptNoteQueryRepo acceptNoteQueryRepo) {
         this.noteRepo = noteRepo;
         this.userRepo = userRepo;
         this.checkUserInput = checkUserInput;
         this.entityToDtoConverter = entityToDtoConverter;
+        this.acceptNoteQueryRepo = acceptNoteQueryRepo;
     }
 
     public String createNote(CreateNoteRequest request) throws UserMissingException {
@@ -98,10 +103,19 @@ public class NoteService {
             return "blocked";
         }
 
+        AcceptNoteQuery acceptNoteQuery = new AcceptNoteQuery(
+                UUID.randomUUID(),
+                UUID.fromString(request.getNoteId()),
+                UUID.fromString(request.getInviterId()),
+                recipientUser.get().getId(),
+                request.getTitle());
+        acceptNoteQueryRepo.save(acceptNoteQuery);
+
         //här borde en förfrågan gå ut till mottagaren, istället för att bara lägga till note.
-        recipientUser.get().getNotes().add(noteRepo.findById(UUID.fromString(request.getNoteId())).get());
-        NoteEntity note = noteRepo.findById(UUID.fromString(request.getNoteId())).get();
-        note.getUsers().add(recipientUser.get());
+
+//        recipientUser.get().getNotes().add(noteRepo.findById(UUID.fromString(request.getNoteId())).get());
+//        NoteEntity note = noteRepo.findById(UUID.fromString(request.getNoteId())).get();
+//        note.getUsers().add(recipientUser.get());
         return "Note sent!";
     }
 

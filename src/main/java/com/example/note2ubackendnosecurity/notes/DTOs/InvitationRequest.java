@@ -9,4 +9,5 @@ public class InvitationRequest {
     private String recipientUsername;
     private String recipientEmail;
     private String noteId;
+    private String title;
 }

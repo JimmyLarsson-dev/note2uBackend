@@ -17,10 +17,10 @@ import java.util.UUID;
 public class AcceptNoteQuery {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID requestId;
     private UUID itemId; //Id:t på note eller checklist
     private UUID senderId;
     private UUID recipientId;
+    private String title;
 
 }
