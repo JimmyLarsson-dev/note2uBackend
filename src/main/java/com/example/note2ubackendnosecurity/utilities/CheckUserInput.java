@@ -5,8 +5,11 @@ import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.notes.NoteRepo;
+import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -39,10 +42,18 @@ public class CheckUserInput {
         }
     }
 
-    public void checkIfUserExists(String userId) throws UserMissingException {
+    public void checkIfUserExists(String userId, String message) throws UserMissingException {
         if (userRepo.existsById(UUID.fromString(userId))) {
-            throw new UserMissingException("No such user!");
+            throw new UserMissingException(message);
         }
     }
-}
 
+    public boolean checkIfSenderIsBlocked(String senderId, String recipientId) {
+        List<UserEntity> blockedList = userRepo.findById(UUID.fromString(recipientId)).get().getBlockedUsers()
+                .stream()
+                .filter(x -> x.getId().toString().equals(senderId))
+                .toList();
+        //if the sender is blocked, return true
+        return !blockedList.isEmpty();
+    }
+}

@@ -41,7 +41,7 @@ public class NoteService {
     }
 
     public String createNote(CreateNoteRequest request) throws UserMissingException {
-        checkUserInput.checkIfUserExists(request.getUserId());
+        checkUserInput.checkIfUserExists(request.getUserId(), "User does not exist");
         Optional<UserEntity> user = userRepo.findById(UUID.fromString(request.getUserId()));
         if (request.getTitle() == null) {
             request.setTitle(" ");
@@ -80,13 +80,13 @@ public class NoteService {
     }
 
     public List<GetNoteResponse> getAllMyNotes(String userId) throws UserMissingException {
-        checkUserInput.checkIfUserExists(userId);
+        checkUserInput.checkIfUserExists(userId, "User does not exist");
         Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(userId));
         return entityToDtoConverter.getNoteResponseListFromUserId(optionalUser);
     }
 
     public String inviteUserByEmail(InvitationRequest request) throws UserMissingException, NoteMissingException {
-        checkUserInput.checkIfUserExists(request.getInviterId());
+        checkUserInput.checkIfUserExists(request.getInviterId(), "Inviting user does not exist");
         checkUserInput.checkIfNoteExists(request.getNoteId());
         checkUserInput.checkEmailFormat(request.getRecipientEmail());
 
@@ -95,13 +95,13 @@ public class NoteService {
             throw new UserMissingException("Recipient not found!");
         }
 
-        List<UserEntity> blockedList = recipientUser.get().getBlockedUsers()
-                .stream()
-                .filter(x -> x.getId().toString().equals(request.getInviterId()))
-                .toList();
-        if (!blockedList.isEmpty()) {
-            return "blocked";
-        }
+//        List<UserEntity> blockedList = recipientUser.get().getBlockedUsers()
+//                .stream()
+//                .filter(x -> x.getId().toString().equals(request.getInviterId()))
+//                .toList();
+//        if (!blockedList.isEmpty()) {
+//            return "blocked";
+//        }
 
         AcceptNoteQuery acceptNoteQuery = new AcceptNoteQuery(
                 UUID.randomUUID(),
@@ -111,16 +111,11 @@ public class NoteService {
                 request.getTitle());
         acceptNoteQueryRepo.save(acceptNoteQuery);
 
-        //här borde en förfrågan gå ut till mottagaren, istället för att bara lägga till note.
-
-//        recipientUser.get().getNotes().add(noteRepo.findById(UUID.fromString(request.getNoteId())).get());
-//        NoteEntity note = noteRepo.findById(UUID.fromString(request.getNoteId())).get();
-//        note.getUsers().add(recipientUser.get());
         return "Note sent!";
     }
 
     public String inviteUserByUsername(InvitationRequest request) throws UserMissingException, NoteMissingException {
-        checkUserInput.checkIfUserExists(request.getInviterId());
+        checkUserInput.checkIfUserExists(request.getInviterId(), "Inviting user does not exist");
         checkUserInput.checkIfNoteExists(request.getNoteId());
 
 //Lägg till regex för att kolla username

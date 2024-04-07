@@ -6,6 +6,5 @@ import lombok.Data;
 public class AcceptNoteRequest {
 
     private String NoteId;
-
-
+    private String userId;
 }

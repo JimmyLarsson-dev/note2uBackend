@@ -24,7 +24,7 @@ public class AcceptNoteQueryController {
     }
 
     @PostMapping("/acceptNote")
-    public GetNoteResponse acceptNote(@RequestBody AcceptNoteRequest acceptNoteRequest) {
-
+    public GetNoteResponse acceptNote(@RequestBody AcceptNoteRequest acceptNoteRequest) throws UserMissingException {
+        return acceptNoteQueryService.acceptNote(acceptNoteRequest);
     }
 }
