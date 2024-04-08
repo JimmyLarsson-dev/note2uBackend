@@ -41,7 +41,7 @@ public class NoteService {
     }
 
     public String createNote(CreateNoteRequest request) throws UserMissingException {
-        checkUserInput.checkIfUserExists(request.getUserId(), "User does not exist");
+        checkUserInput.checkIfUserExists(request.getUserId());
         Optional<UserEntity> user = userRepo.findById(UUID.fromString(request.getUserId()));
         if (request.getTitle() == null) {
             request.setTitle(" ");
@@ -80,7 +80,7 @@ public class NoteService {
     }
 
     public List<GetNoteResponse> getAllMyNotes(String userId) throws UserMissingException {
-        checkUserInput.checkIfUserExists(userId, "User does not exist");
+        checkUserInput.checkIfUserExists(userId);
         Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(userId));
         return entityToDtoConverter.getNoteResponseListFromUserId(optionalUser);
     }
@@ -95,13 +95,11 @@ public class NoteService {
             throw new UserMissingException("Recipient not found!");
         }
 
-//        List<UserEntity> blockedList = recipientUser.get().getBlockedUsers()
-//                .stream()
-//                .filter(x -> x.getId().toString().equals(request.getInviterId()))
-//                .toList();
-//        if (!blockedList.isEmpty()) {
-//            return "blocked";
-//        }
+        if(checkUserInput.checkIfSenderIsBlocked(
+                request.getInviterId(),
+                recipientUser.get().getId().toString())) {
+            return "blocked";
+        }
 
         AcceptNoteQuery acceptNoteQuery = new AcceptNoteQuery(
                 UUID.randomUUID(),

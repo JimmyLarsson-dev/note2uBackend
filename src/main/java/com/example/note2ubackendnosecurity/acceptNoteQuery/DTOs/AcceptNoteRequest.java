@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class AcceptNoteRequest {
 
-    private String NoteId;
+    private String requestId;
+    private String itemId;
     private String userId;
 }
