@@ -17,7 +17,8 @@ public class EntityToDtoConverter {
         List<GetNoteResponse> dtoList = new ArrayList<>();
         if (!optionalUser.get().getNotes().isEmpty()) {
             for (int i = 0; i < optionalUser.get().getNotes().size(); i++) {
-                dtoList.add(new GetNoteResponse(optionalUser.get().getNotes().get(i).getId(),
+                dtoList.add(new GetNoteResponse(
+                        optionalUser.get().getNotes().get(i).getId().toString(),
                         optionalUser.get().getNotes().get(i).getTitle(),
                         optionalUser.get().getNotes().get(i).getContent(),
                         optionalUser.get().getNotes().get(i).getUsers().stream().map(x -> x.getId()).collect(Collectors.toList()),
@@ -30,7 +31,7 @@ public class EntityToDtoConverter {
 
     public GetNoteResponse convertNoteToGetNoteResponse(NoteEntity note) {
         return new GetNoteResponse(
-                note.getId(),
+                note.getId().toString(),
                 note.getTitle(),
                 note.getContent(),
                 note.getUsers()

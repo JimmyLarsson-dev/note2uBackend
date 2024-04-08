@@ -10,7 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 public class GetAllNotesAndChecklistsResponse {
 
-    public List<ChecklistResponse> checklistList;
     public List<GetNoteResponse> noteList;
 
 }

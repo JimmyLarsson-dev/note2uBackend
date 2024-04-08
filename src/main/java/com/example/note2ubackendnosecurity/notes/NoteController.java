@@ -46,7 +46,7 @@ public class NoteController {
     }
 
     @GetMapping("/getAllMyNotesAndChecklists")
-    public GetAllNotesAndChecklistsResponse getAllMyNotesAndChecklists(@RequestHeader String id) throws UserMissingException {
+    public List<GetNoteResponse> getAllMyNotesAndChecklists(@RequestHeader String id) throws UserMissingException {
         return noteService.getAllMyNotesAndChecklists(id);
     }
 

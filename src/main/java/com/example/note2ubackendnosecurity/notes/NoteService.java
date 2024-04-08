@@ -144,12 +144,11 @@ public class NoteService {
 
 
 
-    public GetAllNotesAndChecklistsResponse getAllMyNotesAndChecklists(String id) throws UserMissingException {
+    public List<GetNoteResponse> getAllMyNotesAndChecklists(String userId) throws UserMissingException {
+        Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(userId));
 
-        Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(id));
-        if (optionalUser.isEmpty()) {
-            throw new UserMissingException("No such user!");
-        }
+        checkUserInput.checkIfUserExists(userId);
+
         List<GetNoteResponse> getNoteList = new ArrayList<>();
         List<ChecklistResponse> getCheckListList = new ArrayList<>();
 
@@ -158,7 +157,8 @@ public class NoteService {
 //                optionalUser.get().getNotes()
 //                        .forEach(x -> dtoList.add(new GetNoteResponse(x.getId(), x.getTitle(), x.getContent(), x.getUsers())));
             for (int i = 0; i < optionalUser.get().getNotes().size(); i++) {
-                getNoteList.add(new GetNoteResponse(optionalUser.get().getNotes().get(i).getId(),
+                getNoteList.add(new GetNoteResponse(
+                        optionalUser.get().getNotes().get(i).getId().toString(),
                         optionalUser.get().getNotes().get(i).getTitle(),
                         optionalUser.get().getNotes().get(i).getContent(),
                         optionalUser.get().getNotes().get(i).getUsers().stream().map(x -> x.getId()).collect(Collectors.toList()),
@@ -168,17 +168,17 @@ public class NoteService {
         }
         if (!optionalUser.get().getCheckLists().isEmpty()) {
             for (int i = 0; i < optionalUser.get().getCheckLists().size(); i++) {
-                getCheckListList.add(
-                        new ChecklistResponse(
+                getNoteList.add(
+                        new GetNoteResponse(
                                 optionalUser.get().getCheckLists().get(i).getId().toString(),
                                 optionalUser.get().getCheckLists().get(i).getTitle(),
                                 optionalUser.get().getCheckLists().get(i).getItemList(),
-                                optionalUser.get().getCheckLists().get(i).getUsers(),
-                                optionalUser.get().getCheckLists().get(i).getHasBeenViewed()
+                                optionalUser.get().getCheckLists().get(i).getUsers().stream().map(x -> x.getId()).collect(Collectors.toList()),
+                                optionalUser.get().getCheckLists().get(i).getHasBeenViewed().isHasUserViewed()
                         ));
             }
         }
-        return new GetAllNotesAndChecklistsResponse(getCheckListList, getNoteList);
+        return getNoteList;
 
     }
 }
