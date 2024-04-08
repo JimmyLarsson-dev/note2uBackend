@@ -41,7 +41,7 @@ public class NoteController {
     }
 
     @GetMapping("/getAllMyNotes")
-    public List<GetNoteResponse> getAllMyNotes(@RequestHeader String userId) throws NoteMissingException, NoteAccessMissingException, UserMissingException {
+    public List<GetNoteResponse> getAllMyNotes(@RequestHeader String userId) throws UserMissingException {
         return noteService.getAllMyNotes(userId);
     }
 
