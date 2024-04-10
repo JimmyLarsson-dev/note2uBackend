@@ -9,7 +9,7 @@ public class CreateChecklistRequest {
 
     private String userId;
     private String title;
-    private List<Item> itemList;
+    private List<ItemRequest> itemList;
 
 
 }

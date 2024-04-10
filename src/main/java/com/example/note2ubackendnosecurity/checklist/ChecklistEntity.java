@@ -18,7 +18,7 @@ import java.util.UUID;
 public class ChecklistEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name= "checklist_id")
     UUID id;
     private String title;

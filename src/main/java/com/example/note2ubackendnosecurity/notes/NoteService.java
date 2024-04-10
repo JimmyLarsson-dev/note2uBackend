@@ -65,10 +65,10 @@ public class NoteService {
         return "Note updated!";
     }
 
-    public String deleteNote(String noteId, String userId) throws NoteAccessMissingException, NoteMissingException {
-        checkUserInput.checkIfNoteExists(noteId);
-        checkUserInput.checkUserHasAccess(userId, noteId);
-        noteRepo.delete(noteRepo.getReferenceById(UUID.fromString(noteId)));
+    public String deleteNote(EditNoteRequest request) throws NoteAccessMissingException, NoteMissingException {
+        checkUserInput.checkIfNoteExists(request.getNoteId());
+        checkUserInput.checkUserHasAccess(request.getUserId(), request.getNoteId());
+        noteRepo.delete(noteRepo.getReferenceById(UUID.fromString(request.getNoteId())));
         return "Note deleted!";
     }
 

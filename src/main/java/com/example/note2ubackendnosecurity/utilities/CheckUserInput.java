@@ -2,6 +2,7 @@ package com.example.note2ubackendnosecurity.utilities;
 
 import com.example.note2ubackendnosecurity.acceptNoteQuery.AcceptNoteQuery;
 import com.example.note2ubackendnosecurity.acceptNoteQuery.AcceptNoteQueryRepo;
+import com.example.note2ubackendnosecurity.checklist.ChecklistRepo;
 import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
 import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
@@ -20,11 +21,13 @@ public class CheckUserInput {
 
     private final NoteRepo noteRepo;
     private final UserRepo userRepo;
+    private final ChecklistRepo checklistRepo;
     private final AcceptNoteQueryRepo acceptNoteQueryRepo;
 
-    public CheckUserInput(NoteRepo noteRepo, UserRepo userRepo, AcceptNoteQueryRepo acceptNoteQueryRepo) {
+    public CheckUserInput(NoteRepo noteRepo, UserRepo userRepo, ChecklistRepo checklistRepo, AcceptNoteQueryRepo acceptNoteQueryRepo) {
         this.noteRepo = noteRepo;
         this.userRepo = userRepo;
+        this.checklistRepo = checklistRepo;
         this.acceptNoteQueryRepo = acceptNoteQueryRepo;
     }
 
@@ -41,6 +44,12 @@ public class CheckUserInput {
         }
     }
 
+    public void checkIfChecklistExists(String checklistID) throws NoteMissingException {
+        if(!checklistRepo.existsById(UUID.fromString(checklistID))) {
+            throw new NoteMissingException("No such checklist found!");
+        }
+    }
+
     public void checkUserHasAccess(String userId, String noteId) throws NoteAccessMissingException {
         if (!userRepo.existsByIdAndNotesContains(UUID.fromString(userId), noteRepo.getReferenceById(UUID.fromString(noteId)) )) {
             throw new NoteAccessMissingException("User does not have access to that note!");
@@ -48,13 +57,13 @@ public class CheckUserInput {
     }
 
     public void checkIfUserExists(String userId, String message) throws UserMissingException {
-        if (userRepo.existsById(UUID.fromString(userId))) {
+        if (!userRepo.existsById(UUID.fromString(userId))) {
             throw new UserMissingException(message);
         }
     }
 
     public void checkIfUserExists(String userId) throws UserMissingException {
-        if (userRepo.existsById(UUID.fromString(userId))) {
+        if (!userRepo.existsById(UUID.fromString(userId))) {
             throw new UserMissingException("User does not exist");
         }
     }

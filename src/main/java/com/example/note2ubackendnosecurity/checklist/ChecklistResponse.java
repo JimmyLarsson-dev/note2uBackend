@@ -1,20 +1,17 @@
 package com.example.note2ubackendnosecurity.checklist;
 
-import com.example.note2ubackendnosecurity.user.UserEntity;
+import com.example.note2ubackendnosecurity.user.DTOs.UserInNoteOrChecklist;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 public class ChecklistResponse {
-    private String id;
+    private String checklistId;
     private String title;
     private List<Item> itemList;
-    private List<UserEntity> users;
+    private List<UserInNoteOrChecklist> users;
     private UserViewedMap statusBeenViewed;
 }
 

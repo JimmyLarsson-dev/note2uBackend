@@ -1,0 +1,14 @@
+package com.example.note2ubackendnosecurity.user.DTOs;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class UserInNoteOrChecklist {
+
+    private String userId;
+    private String email;
+    private String username;
+
+}

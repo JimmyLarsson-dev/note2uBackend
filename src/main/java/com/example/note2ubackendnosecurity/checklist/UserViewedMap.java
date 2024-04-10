@@ -19,17 +19,11 @@ import java.util.UUID;
 public class UserViewedMap {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID mapId;
     private UUID noteOrChecklistId;
     private UUID userId;
     private boolean hasUserViewed;
-
-    public UserViewedMap(UUID noteOrChecklistId, UUID userId, boolean hasUserViewed) {
-        this.noteOrChecklistId = noteOrChecklistId;
-        this.userId = userId;
-        this.hasUserViewed = hasUserViewed;
-    }
 
     //den här konstruktorn är bara för Startupconfig
     public UserViewedMap(UUID userId, boolean hasUserViewed) {

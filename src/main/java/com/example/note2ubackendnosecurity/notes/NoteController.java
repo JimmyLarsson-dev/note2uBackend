@@ -32,7 +32,7 @@ public class NoteController {
 
     @DeleteMapping("/deleteNote")
     public String deleteNote(@RequestBody EditNoteRequest request) throws NoteMissingException, NoteAccessMissingException {
-        return noteService.deleteNote(request.getNoteId(), request.getUserId());
+        return noteService.deleteNote(request);
     }
 
     @GetMapping("/getNote")
@@ -46,15 +46,18 @@ public class NoteController {
     }
 
     @GetMapping("/getAllMyNotesAndChecklists")
-    public List<GetNoteResponse> getAllMyNotesAndChecklists(@RequestHeader String id) throws UserMissingException {
-        return noteService.getAllMyNotesAndChecklists(id);
+    public List<GetNoteResponse> getAllMyNotesAndChecklists(@RequestHeader String userId) throws UserMissingException {
+        return noteService.getAllMyNotesAndChecklists(userId);
     }
 
+
+    //Inte testad!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     @PatchMapping("/inviteUserByEmail")
     public String inviteUserByEmail(@RequestBody InvitationRequest request) throws UserMissingException, NoteMissingException {
         return noteService.inviteUserByEmail(request);
     }
 
+    //Inte testad!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     @PatchMapping("/inviteUserByUsername")
     public String inviteUserByUsername(@RequestBody InvitationRequest request) throws UserMissingException, NoteMissingException {
         return noteService.inviteUserByUsername(request);
