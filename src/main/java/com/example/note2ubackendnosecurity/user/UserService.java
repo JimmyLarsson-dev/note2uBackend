@@ -5,6 +5,7 @@ import com.example.note2ubackendnosecurity.exceptions.UserAlreadyRegisteredExcep
 import com.example.note2ubackendnosecurity.exceptions.UserNameAlreadyExistsException;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
+import com.example.note2ubackendnosecurity.utilities.VerifyUserInput;
 import com.example.note2ubackendnosecurity.utilities.WelcomeNote;
 import com.example.note2ubackendnosecurity.user.DTOs.*;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,12 @@ public class UserService {
 
     private final UserRepo repo;
     private final WelcomeNote welcomeNote;
+    private final VerifyUserInput verifyUserInput;
 
-    public UserService(UserRepo repo, WelcomeNote welcomeNote) {
+    public UserService(UserRepo repo, WelcomeNote welcomeNote, VerifyUserInput verifyUserInput) {
         this.repo = repo;
         this.welcomeNote = welcomeNote;
+        this.verifyUserInput = verifyUserInput;
     }
 
     public RegisterResponse register(RegisterRequest request) {
@@ -98,27 +101,38 @@ public class UserService {
         }
     }
 
+    //lägg till funktion för att blocka per username!!!!!!!!!!!!!!!!!!!
+    //vad händer om man skickar in samma user flera gånger?
     public String blockUser(BlockRequest request) throws UserMissingException {
-        UserEntity user = checkUsersExistAndReturnCallingUser(request);
+        UserEntity user = verifyUserInput.checkUsersExistAndReturnCallingUser(request);
         user.getBlockedUsers().add(repo.findByEmail(request.getBlockedUserEmail()).get());
         repo.save(user);
         return "User with email " + request.getBlockedUserEmail() + " has been blocked.";
     }
 
+    //lägg till funktion för att unblocka per username!!!!!!!!!!!!!!!!!!!
     public String unblockUser(BlockRequest request) throws UserMissingException {
-        UserEntity user = checkUsersExistAndReturnCallingUser(request);
-        user.getBlockedUsers().remove(repo.findByEmail(request.getBlockedUserEmail()).get());
-        repo.save(user);
-        return "User has been unblocked";
+        UserEntity user = verifyUserInput.checkUsersExistAndReturnCallingUser(request);
+        if(!request.getBlockedUserEmail().isEmpty()) {
+            user.getBlockedUsers().remove(repo.findByEmail(request.getBlockedUserEmail()).get());
+            repo.save(user);
+            return "User with email " + request.getBlockedUserEmail() +  " has been unblocked";
+        }
+        if(!request.getBlockedUserUsername().isEmpty()) {
+            user.getBlockedUsers().remove(repo.findByUsername(request.getBlockedUserUsername()).get());
+            repo.save(user);
+            return "User " + request.getBlockedUserUsername() +  " has been unblocked";
+        }
+        return "No user specified";
     }
 
-    private UserEntity checkUsersExistAndReturnCallingUser(BlockRequest request) throws UserMissingException {
-        if(repo.findById(UUID.fromString(request.getCallingUserId())).isEmpty()) {
-            throw new UserMissingException("No such user found in database");
-        }
-        if(repo.findByEmail(request.getBlockedUserEmail()).isEmpty()) {
-            throw new UserMissingException("Cannot find user, unable to block.");
-        }
-        return repo.findById(UUID.fromString(request.getCallingUserId())).get();
-    }
+//    private UserEntity checkUsersExistAndReturnCallingUser(BlockRequest request) throws UserMissingException {
+//        if(repo.findById(UUID.fromString(request.getCallingUserId())).isEmpty()) {
+//            throw new UserMissingException("No such user found in database");
+//        }
+//        if(repo.findByEmail(request.getBlockedUserEmail()).isEmpty()) {
+//            throw new UserMissingException("Cannot find user, unable to block.");
+//        }
+//        return repo.findById(UUID.fromString(request.getCallingUserId())).get();
+//    }
 }

@@ -32,8 +32,8 @@ public class UserController {
         return service.blockUser(request);
     }
 
-    @PutMapping("/unblockUser")
-    public String unblockUser(BlockRequest request) throws UserMissingException {
+    @PostMapping("/unblockUser")
+    public String unblockUser(@RequestBody BlockRequest request) throws UserMissingException {
         return service.unblockUser(request);
     }
 }

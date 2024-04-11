@@ -7,5 +7,5 @@ public class BlockRequest {
 
     private String callingUserId;
     private String blockedUserEmail;
-
+    private String blockedUserUsername;
 }

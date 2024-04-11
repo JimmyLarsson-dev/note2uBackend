@@ -8,6 +8,7 @@ import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.notes.NoteRepo;
+import com.example.note2ubackendnosecurity.user.DTOs.BlockRequest;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
@@ -92,5 +93,17 @@ public class VerifyUserInput {
         ) {
             throw new InvalidInputException("No such checklist for this user");
         }
+    }
+
+    public UserEntity checkUsersExistAndReturnCallingUser(BlockRequest request) throws UserMissingException {
+        if(userRepo.findById(UUID.fromString(request.getCallingUserId())).isEmpty()) {
+            throw new UserMissingException("No such user found in database");
+        }
+        if(userRepo.findByEmail(request.getBlockedUserEmail()).isEmpty() &&
+            userRepo.findByUsername(request.getBlockedUserUsername()).isEmpty()
+        ) {
+            throw new UserMissingException("Cannot find user, unable to change status.");
+        }
+        return userRepo.findById(UUID.fromString(request.getCallingUserId())).get();
     }
 }
