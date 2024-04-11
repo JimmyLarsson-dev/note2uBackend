@@ -1,10 +1,9 @@
 package com.example.note2ubackendnosecurity.user;
 
 import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
-import com.example.note2ubackendnosecurity.exceptions.UserAlreadyRegisteredException;
-import com.example.note2ubackendnosecurity.exceptions.UserNameAlreadyExistsException;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
+import com.example.note2ubackendnosecurity.utilities.EntityToDtoConverter;
 import com.example.note2ubackendnosecurity.utilities.VerifyUserInput;
 import com.example.note2ubackendnosecurity.utilities.WelcomeNote;
 import com.example.note2ubackendnosecurity.user.DTOs.*;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import javax.security.auth.login.CredentialException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -20,22 +18,23 @@ public class UserService {
     private final UserRepo repo;
     private final WelcomeNote welcomeNote;
     private final VerifyUserInput verifyUserInput;
+    private final EntityToDtoConverter entityToDtoConverter;
 
-    public UserService(UserRepo repo, WelcomeNote welcomeNote, VerifyUserInput verifyUserInput) {
+    public UserService(UserRepo repo, WelcomeNote welcomeNote, VerifyUserInput verifyUserInput, EntityToDtoConverter entityToDtoConverter) {
         this.repo = repo;
         this.welcomeNote = welcomeNote;
         this.verifyUserInput = verifyUserInput;
+        this.entityToDtoConverter = entityToDtoConverter;
     }
 
     public RegisterResponse register(RegisterRequest request) {
         //lägg till regex för att kolla mailen? Eller hantera det med Keycloak?
-
-        checkIfAlreadyRegistered(request);
+        verifyUserInput.checkIfAlreadyRegistered(request);
         UserEntity user = createUserEntity(request);
         NoteEntity noteEntity = createNoteEntity(user);
         user.setNotes(List.of(noteEntity));
         repo.save(user);
-        return createRegisterResponse(user);
+        return entityToDtoConverter.createRegisterResponse(user);
     }
 
     private NoteEntity createNoteEntity(UserEntity user) {
@@ -46,15 +45,7 @@ public class UserService {
                 false);
     }
 
-    private static RegisterResponse createRegisterResponse(UserEntity user) {
-        return new RegisterResponse(
-                user.getId().toString(),
-                user.getUsername(),
-                user.getEmail()
-        );
-    }
-
-    private static UserEntity createUserEntity(RegisterRequest request) {
+    private UserEntity createUserEntity(RegisterRequest request) {
         UserEntity user = new UserEntity(
                 request.getEmail(),
                 request.getUsername(),
@@ -65,22 +56,13 @@ public class UserService {
         return user;
     }
 
-    private static String selectLanguage(RegisterRequest request) {
-        if(request.getLanguage().equals("SWEDISH")) {
+    private String selectLanguage(RegisterRequest request) {
+        if(request.getLanguage().equalsIgnoreCase("SWEDISH")) {
             return "swedish";
-        } else if (request.getLanguage().equals("ENGLISH")) {
+        } else if (request.getLanguage().equalsIgnoreCase("ENGLISH")) {
             return "english";
         } else {
             throw new InvalidInputException("Unacceptable language option");
-        }
-    }
-
-    private void checkIfAlreadyRegistered(RegisterRequest request) {
-        if (repo.findByEmail(request.getEmail()).isPresent()) {
-            throw new UserAlreadyRegisteredException("Email already registered");
-        }
-        if (repo.findByUsername(request.getUsername()).isPresent()) {
-            throw new UserNameAlreadyExistsException("Username already registered");
         }
     }
 
@@ -125,14 +107,4 @@ public class UserService {
         }
         return "No user specified";
     }
-
-//    private UserEntity checkUsersExistAndReturnCallingUser(BlockRequest request) throws UserMissingException {
-//        if(repo.findById(UUID.fromString(request.getCallingUserId())).isEmpty()) {
-//            throw new UserMissingException("No such user found in database");
-//        }
-//        if(repo.findByEmail(request.getBlockedUserEmail()).isEmpty()) {
-//            throw new UserMissingException("Cannot find user, unable to block.");
-//        }
-//        return repo.findById(UUID.fromString(request.getCallingUserId())).get();
-//    }
 }

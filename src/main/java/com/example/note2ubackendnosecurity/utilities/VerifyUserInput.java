@@ -3,12 +3,10 @@ package com.example.note2ubackendnosecurity.utilities;
 import com.example.note2ubackendnosecurity.acceptNoteQuery.AcceptNoteQuery;
 import com.example.note2ubackendnosecurity.acceptNoteQuery.AcceptNoteQueryRepo;
 import com.example.note2ubackendnosecurity.checklist.ChecklistRepo;
-import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
-import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
-import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
-import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
+import com.example.note2ubackendnosecurity.exceptions.*;
 import com.example.note2ubackendnosecurity.notes.NoteRepo;
 import com.example.note2ubackendnosecurity.user.DTOs.BlockRequest;
+import com.example.note2ubackendnosecurity.user.DTOs.RegisterRequest;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
@@ -105,5 +103,14 @@ public class VerifyUserInput {
             throw new UserMissingException("Cannot find user, unable to change status.");
         }
         return userRepo.findById(UUID.fromString(request.getCallingUserId())).get();
+    }
+
+    public void checkIfAlreadyRegistered(RegisterRequest request) {
+        if (userRepo.findByEmail(request.getEmail()).isPresent()) {
+            throw new UserAlreadyRegisteredException("Email already registered");
+        }
+        if (userRepo.findByUsername(request.getUsername()).isPresent()) {
+            throw new UserNameAlreadyExistsException("Username already registered");
+        }
     }
 }
