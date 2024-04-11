@@ -12,7 +12,7 @@ import com.example.note2ubackendnosecurity.notes.NoteEntity;
 import com.example.note2ubackendnosecurity.notes.NoteRepo;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
-import com.example.note2ubackendnosecurity.utilities.CheckUserInput;
+import com.example.note2ubackendnosecurity.utilities.VerifyUserInput;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -22,19 +22,19 @@ import java.util.stream.Collectors;
 @Service
 public class AcceptNoteQueryService {
 
-    private final CheckUserInput checkUserInput;
+    private final VerifyUserInput verifyUserInput;
     private final AcceptNoteQueryRepo acceptNoteQueryRepo;
     private final NoteRepo noteRepo;
     private final ChecklistRepo checklistRepo;
     private final UserRepo userRepo;
 
     public AcceptNoteQueryService(
-            CheckUserInput checkUserInput,
+            VerifyUserInput verifyUserInput,
             AcceptNoteQueryRepo acceptNoteQueryRepo,
             NoteRepo noteRepo,
             ChecklistRepo checklistRepo,
             UserRepo userRepo) {
-        this.checkUserInput = checkUserInput;
+        this.verifyUserInput = verifyUserInput;
         this.acceptNoteQueryRepo = acceptNoteQueryRepo;
         this.noteRepo = noteRepo;
         this.checklistRepo = checklistRepo;
@@ -44,7 +44,7 @@ public class AcceptNoteQueryService {
     public NoteQueryResponse checkReceivedNotes(String userId) throws NoteMissingException, UserMissingException {
 
         //What happens in this method if there is more than one received note??????????????????????????????????
-        checkUserInput.checkIfUserExists(userId);
+        verifyUserInput.verifyIfUserExists(userId);
         Optional<AcceptNoteQuery> optionalAcceptNoteQuery = acceptNoteQueryRepo.findByRecipientId(UUID.fromString(userId));
         if(optionalAcceptNoteQuery.isEmpty()) {
             throw new NoteMissingException("No new notes");
@@ -59,10 +59,10 @@ public class AcceptNoteQueryService {
     public GetNoteResponse acceptNote(AcceptNoteRequest acceptNoteRequest) throws UserMissingException {
 
 //        Kolla att användaren finns
-        checkUserInput.checkIfUserExists(acceptNoteRequest.getUserId());
+        verifyUserInput.verifyIfUserExists(acceptNoteRequest.getUserId());
 
 //        kolla att queryn finns
-        AcceptNoteQuery acceptNoteQuery =  checkUserInput.checkIfAcceptNoteQueryExists(acceptNoteRequest.getRequestId());
+        AcceptNoteQuery acceptNoteQuery =  verifyUserInput.verifyIfAcceptNoteQueryExists(acceptNoteRequest.getRequestId());
 
         //kolla att det är rätt användare som anropar
         if(!acceptNoteQuery.getRecipientId().toString().equals(acceptNoteRequest.getUserId())) {

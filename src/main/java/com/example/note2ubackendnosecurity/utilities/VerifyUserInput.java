@@ -17,58 +17,58 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class CheckUserInput {
+public class VerifyUserInput {
 
     private final NoteRepo noteRepo;
     private final UserRepo userRepo;
     private final ChecklistRepo checklistRepo;
     private final AcceptNoteQueryRepo acceptNoteQueryRepo;
 
-    public CheckUserInput(NoteRepo noteRepo, UserRepo userRepo, ChecklistRepo checklistRepo, AcceptNoteQueryRepo acceptNoteQueryRepo) {
+    public VerifyUserInput(NoteRepo noteRepo, UserRepo userRepo, ChecklistRepo checklistRepo, AcceptNoteQueryRepo acceptNoteQueryRepo) {
         this.noteRepo = noteRepo;
         this.userRepo = userRepo;
         this.checklistRepo = checklistRepo;
         this.acceptNoteQueryRepo = acceptNoteQueryRepo;
     }
 
-    public void checkEmailFormat(String email) {
+    public void verifyEmailFormat(String email) {
         //Dubbelkolla regex!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if(!email.matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
             throw new InvalidInputException("Incorrect email format!");
         }
     }
 
-    public void checkIfNoteExists(String noteId) throws NoteMissingException {
+    public void verifyIfNoteExists(String noteId) throws NoteMissingException {
         if(!noteRepo.existsById(UUID.fromString(noteId))) {
             throw new NoteMissingException("No such note found!");
         }
     }
 
-    public void checkIfChecklistExists(String checklistID) throws NoteMissingException {
+    public void verifyIfChecklistExists(String checklistID) throws NoteMissingException {
         if(!checklistRepo.existsById(UUID.fromString(checklistID))) {
             throw new NoteMissingException("No such checklist found!");
         }
     }
 
-    public void checkUserHasAccess(String userId, String noteId) throws NoteAccessMissingException {
+    public void verifyUserHasAccess(String userId, String noteId) throws NoteAccessMissingException {
         if (!userRepo.existsByIdAndNotesContains(UUID.fromString(userId), noteRepo.getReferenceById(UUID.fromString(noteId)) )) {
             throw new NoteAccessMissingException("User does not have access to that note!");
         }
     }
 
-    public void checkIfUserExists(String userId, String message) throws UserMissingException {
+    public void verifyIfUserExists(String userId, String message) throws UserMissingException {
         if (!userRepo.existsById(UUID.fromString(userId))) {
             throw new UserMissingException(message);
         }
     }
 
-    public void checkIfUserExists(String userId) throws UserMissingException {
+    public void verifyIfUserExists(String userId) throws UserMissingException {
         if (!userRepo.existsById(UUID.fromString(userId))) {
             throw new UserMissingException("User does not exist");
         }
     }
 
-    public boolean checkIfSenderIsBlocked(String senderId, String recipientId) {
+    public boolean verifyIfSenderIsBlocked(String senderId, String recipientId) {
         List<UserEntity> blockedList = userRepo.findById(UUID.fromString(recipientId)).get().getBlockedUsers()
                 .stream()
                 .filter(x -> x.getId().toString().equals(senderId))
@@ -77,11 +77,20 @@ public class CheckUserInput {
         return !blockedList.isEmpty();
     }
 
-    public AcceptNoteQuery checkIfAcceptNoteQueryExists(String requestId) {
+    public AcceptNoteQuery verifyIfAcceptNoteQueryExists(String requestId) {
         Optional<AcceptNoteQuery> optionalAcceptNoteQuery = acceptNoteQueryRepo.findById(UUID.fromString(requestId));
         if(optionalAcceptNoteQuery.isEmpty()) {
             throw new EntityNotFoundException("no such request");
         }
         return optionalAcceptNoteQuery.get();
+    }
+
+    public void verifyChecklistForUser(String checklistId, UserEntity user) {
+        if(user.getCheckLists()
+                .stream()
+                .noneMatch(x -> x.getId().equals(UUID.fromString(checklistId)))
+        ) {
+            throw new InvalidInputException("No such checklist for this user");
+        }
     }
 }

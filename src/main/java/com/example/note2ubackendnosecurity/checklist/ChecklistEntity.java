@@ -24,7 +24,7 @@ public class ChecklistEntity {
     private String title;
 
     @ManyToMany
-        @JoinColumn(name = "item_id")
+    @JoinColumn(name = "item_id")
     @Cascade({CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
     private List<Item> itemList;
 

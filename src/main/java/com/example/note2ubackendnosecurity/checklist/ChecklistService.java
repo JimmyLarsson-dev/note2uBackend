@@ -1,16 +1,18 @@
 package com.example.note2ubackendnosecurity.checklist;
 
+import com.example.note2ubackendnosecurity.checklist.DTOs.*;
 import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
+import com.example.note2ubackendnosecurity.user.DTOs.UserInNoteOrChecklist;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import com.example.note2ubackendnosecurity.user.UserRepo;
-import com.example.note2ubackendnosecurity.utilities.CheckUserInput;
+import com.example.note2ubackendnosecurity.utilities.VerifyUserInput;
 import com.example.note2ubackendnosecurity.utilities.EntityToDtoConverter;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -19,18 +21,18 @@ public class ChecklistService {
 
     UserRepo userRepo;
     ChecklistRepo checklistRepo;
-    CheckUserInput checkUserInput;
+    VerifyUserInput verifyUserInput;
     EntityToDtoConverter entityToDtoConverter;
 
-    public ChecklistService(UserRepo userRepo, ChecklistRepo checklistRepo, CheckUserInput checkUserInput, EntityToDtoConverter entityToDtoConverter) {
+    public ChecklistService(UserRepo userRepo, ChecklistRepo checklistRepo, VerifyUserInput verifyUserInput, EntityToDtoConverter entityToDtoConverter) {
         this.userRepo = userRepo;
         this.checklistRepo = checklistRepo;
-        this.checkUserInput = checkUserInput;
+        this.verifyUserInput = verifyUserInput;
         this.entityToDtoConverter = entityToDtoConverter;
     }
 
     public ChecklistResponse createChecklist(CreateChecklistRequest request) throws UserMissingException {
-        checkUserInput.checkIfUserExists(request.getUserId());
+        verifyUserInput.verifyIfUserExists(request.getUserId());
         UserEntity user = userRepo.findById(UUID.fromString(request.getUserId())).get();
 
         UserViewedMap userViewedMap = new UserViewedMap(
@@ -60,83 +62,87 @@ public class ChecklistService {
                 checklistEntity.getItemList(),
                 List.of(entityToDtoConverter.convertUserEntityToUserInNoteOrChecklist(user)),
                 userViewedMap
-                );
+        );
     }
 
-    private boolean convertStringToBoolean(String boolString) {
-        return boolString.equals("true");
-    }
 
     public ChecklistResponse updateChecklist(UpdateChecklistRequest request) throws UserMissingException, NoteMissingException {
-        checkUserInput.checkIfUserExists(request.getUserId());
-        checkUserInput.checkIfChecklistExists(request.getChecklistId());
-
-        Optional<UserEntity> optUser = userRepo.findById(UUID.fromString(request.getUserId()));
+        verifyUserInput.verifyIfUserExists(request.getUserId());
+        verifyUserInput.verifyIfChecklistExists(request.getChecklistId());
+        UserEntity user = userRepo.findById(UUID.fromString(request.getUserId())).get();
+        verifyUserInput.verifyChecklistForUser(request.getChecklistId(), user);
         ChecklistEntity checklistEntity = checklistRepo.findById(UUID.fromString(request.getChecklistId())).get();
 
-        if(optUser.get().getCheckLists()
+        if (user.getCheckLists()
                 .stream()
                 .noneMatch(x -> x.getId().equals(UUID.fromString(request.getChecklistId())))
         ) {
             throw new InvalidInputException("No such Checklist exists on this user");
         }
 
-        if(!request.getTitle().equals(checklistEntity.getTitle()) &&
-                !request.getTitle().isEmpty()) {
+        if (!request.getTitle().isEmpty()) {
             checklistEntity.setTitle(request.getTitle());
         }
 
-        //Verifiering behövs kring vad som skickas in i itemList!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        checklistEntity.getItemList()
-
-
+        //Verifiera bättre vad som uppdateras, och hur!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        checklistEntity.getItemList().clear();
+        request.getItemList()
+                .forEach(x -> checklistEntity.getItemList()
+                        .add(convertItemDtoToItem(x)));
+//lägg till hasbeenviewed i DTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         checklistRepo.save(checklistEntity);
 
         return new ChecklistResponse(
                 request.getChecklistId(),
                 request.getTitle(),
-                null,
+                checklistEntity.getItemList(),
                 checklistEntity.getUsers()
                         .stream()
-                        .map(user -> entityToDtoConverter.convertUserEntityToUserInNoteOrChecklist(user))
+                        .map(u -> entityToDtoConverter.convertUserEntityToUserInNoteOrChecklist(u))
                         .collect(Collectors.toList()),
                 new UserViewedMap(
                         UUID.fromString(request.getUserId()),
                         true));
     }
 
-//    private Item convertItemDtoToItem(ItemDTO itemDTO) {
-//        return new Item()
-//    }
-
-
-    public ChecklistEntity getChecklist(GetChecklistRequest request) throws UserMissingException {
-
-        Optional<UserEntity> optUser = userRepo.findById(UUID.fromString(request.getUserId()));
-
-        if(optUser.isEmpty()) {
-            throw new UserMissingException("No such user found");
-        }
-
-        if(optUser.get().getCheckLists()
-                .stream()
-                .noneMatch(x -> x.getId().equals(UUID.fromString(request.getChecklistId())))
-        ) {
-            throw new InvalidInputException("No such checklist for this user");
-        }
-
-        return (ChecklistEntity) optUser.get().getCheckLists()
-                .stream()
-                .filter(x -> x.getId().equals(UUID.fromString(request.getChecklistId())));
+    private Item convertItemDtoToItem(ItemDTO itemDTO) {
+        return new Item(
+                itemDTO.getId(),
+                itemDTO.getTitle(),
+                convertStringToBoolean(itemDTO.getJobIsDone()));
     }
 
-    private Item updateItems(Item itemFromRequest, Item originalItem) {
+    private ItemDTO convertItemToItemDto(Item item) {
+        return new ItemDTO(
+                item.getId(),
+                item.getTitle(),
+                convertBooleanToString(item.isJobIsDone()));
+    }
 
-        if(itemFromRequest.getTitle() != null && !itemFromRequest.getTitle().isEmpty()) {
-            originalItem.setTitle(itemFromRequest.getTitle());
-        }
+    public GetChecklistResponse getChecklist(GetChecklistRequest request) throws UserMissingException, NoteMissingException {
+        verifyUserInput.verifyIfUserExists(request.getUserId());
+        UserEntity user = userRepo.findById(UUID.fromString(request.getUserId())).get();
+        verifyUserInput.verifyIfChecklistExists(request.getChecklistId());
+        verifyUserInput.verifyChecklistForUser(request.getChecklistId(), user);
+        ChecklistEntity checklist = checklistRepo.findById(UUID.fromString(request.getChecklistId())).get();
 
-        originalItem.setJobIsDone(true);
-        return originalItem;
+        List<ItemDTO> itemDTOList = checklist.getItemList().stream().map(x -> convertItemToItemDto(x)).toList();
+        List<UserInNoteOrChecklist> userDtoList = checklist.getUsers().stream().map(x -> entityToDtoConverter.convertUserEntityToUserInNoteOrChecklist(x)).toList();
+
+        return new GetChecklistResponse(
+                checklist.getId().toString(),
+                checklist.getTitle(),
+                itemDTOList,
+                userDtoList
+        );
+    }
+
+    private boolean convertStringToBoolean(String boolString) {
+        return boolString.equals("true");
+    }
+
+    private String convertBooleanToString(Boolean bool) {
+        return bool ? "true" : "false";
     }
 }

@@ -1,4 +1,4 @@
-package com.example.note2ubackendnosecurity.checklist;
+package com.example.note2ubackendnosecurity.checklist.DTOs;
 
 import lombok.Data;
 

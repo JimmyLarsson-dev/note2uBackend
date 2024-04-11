@@ -1,5 +1,6 @@
-package com.example.note2ubackendnosecurity.checklist;
+package com.example.note2ubackendnosecurity.checklist.DTOs;
 
+import com.example.note2ubackendnosecurity.checklist.ItemDTO;
 import lombok.Data;
 
 import java.util.HashMap;
