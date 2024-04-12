@@ -4,7 +4,6 @@ import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.notes.DTOs.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -15,7 +14,6 @@ public class NoteController {
 
     NoteService noteService;
 
-    @Autowired
     public NoteController(NoteService noteService) {
         this.noteService = noteService;
     }
@@ -50,16 +48,9 @@ public class NoteController {
         return noteService.getAllMyNotesAndChecklists(userId);
     }
 
-
     //Inte testad!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    @PatchMapping("/inviteUserByEmail")
-    public String inviteUserByEmail(@RequestBody InvitationRequest request) throws UserMissingException, NoteMissingException {
-        return noteService.inviteUserByEmail(request);
-    }
-
-    //Inte testad!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    @PatchMapping("/inviteUserByUsername")
-    public String inviteUserByUsername(@RequestBody InvitationRequest request) throws UserMissingException, NoteMissingException {
-        return noteService.inviteUserByUsername(request);
+    @PostMapping("/inviteUser")
+    public String inviteUser(@RequestBody InvitationRequest request) throws UserMissingException, NoteMissingException {
+        return noteService.inviteUser(request);
     }
 }

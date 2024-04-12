@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class EditNoteRequest {
-    String noteId;
-    String userId;
-    String title;
-    String content;
+    private String noteId;
+    private String userId;
+    private String title;
+    private String content;
 }

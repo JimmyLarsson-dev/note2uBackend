@@ -8,6 +8,6 @@ public class InvitationRequest {
     private String inviterId;
     private String recipientUsername;
     private String recipientEmail;
-    private String noteId;
+    private String itemId;
     private String title;
 }

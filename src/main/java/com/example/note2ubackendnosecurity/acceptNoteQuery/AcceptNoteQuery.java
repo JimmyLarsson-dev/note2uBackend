@@ -18,6 +18,7 @@ public class AcceptNoteQuery {
 
     @Id
     private UUID requestId;
+    private boolean itemIsChecklist;
     private UUID itemId; //Id:t på note eller checklist
     private UUID senderId;
     private UUID recipientId;

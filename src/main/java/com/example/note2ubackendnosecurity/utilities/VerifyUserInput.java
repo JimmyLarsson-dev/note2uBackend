@@ -37,6 +37,30 @@ public class VerifyUserInput {
         }
     }
 
+    public void verifyNotInvitingSelfByEmail(String senderId, String recipientEmail) {
+        if(userRepo.findById(UUID.fromString(senderId)) == userRepo.findByEmail(recipientEmail)) {
+            throw new InvalidInputException("cannot invite self");
+        }
+    }
+
+    public void verifyNotInvitingSelfByUsername(String senderId, String recipientUsername) {
+        if(userRepo.findById(UUID.fromString(senderId)) == userRepo.findByUsername(recipientUsername)) {
+            throw new InvalidInputException("cannot invite self");
+        }
+    }
+
+    public void verifyEmailExists(String email) throws UserMissingException {
+        if(userRepo.findByEmail(email).isEmpty()) {
+            throw new UserMissingException("No user with that email found");
+        }
+    }
+
+    public void verifyUsernameExists(String username) throws UserMissingException {
+        if(userRepo.findByUsername(username).isEmpty()) {
+            throw new UserMissingException("no user with that username found");
+        }
+    }
+
     public void verifyIfNoteExists(String noteId) throws NoteMissingException {
         if(!noteRepo.existsById(UUID.fromString(noteId))) {
             throw new NoteMissingException("No such note found!");
@@ -67,8 +91,8 @@ public class VerifyUserInput {
         }
     }
 
-    public boolean verifyIfSenderIsBlocked(String senderId, String recipientId) {
-        List<UserEntity> blockedList = userRepo.findById(UUID.fromString(recipientId)).get().getBlockedUsers()
+    public boolean verifyIfSenderIsBlocked(String senderId, UUID recipientId) {
+        List<UserEntity> blockedList = userRepo.findById(recipientId).get().getBlockedUsers()
                 .stream()
                 .filter(x -> x.getId().toString().equals(senderId))
                 .toList();
