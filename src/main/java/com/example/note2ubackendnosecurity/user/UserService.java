@@ -27,6 +27,7 @@ public class UserService {
         this.entityToDtoConverter = entityToDtoConverter;
     }
 
+    ///Remove this method + endpoint!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public RegisterResponse register(RegisterRequest request) {
         //lägg till regex för att kolla mailen? Eller hantera det med Keycloak?
         verifyUserInput.checkIfAlreadyRegistered(request);
@@ -34,7 +35,8 @@ public class UserService {
         NoteEntity noteEntity = createNoteEntity(user);
         user.setNotes(List.of(noteEntity));
         repo.save(user);
-        return entityToDtoConverter.createRegisterResponse(user);
+//        return entityToDtoConverter.createRegisterResponse(user);
+        return null;
     }
 
     private NoteEntity createNoteEntity(UserEntity user) {
@@ -46,14 +48,24 @@ public class UserService {
     }
 
     private UserEntity createUserEntity(RegisterRequest request) {
-        UserEntity user = new UserEntity(
-                request.getEmail(),
-                request.getUsername(),
-                request.getPassword(),
-                List.of(),
-                List.of(),
-                selectLanguage(request));
-        return user;
+
+        return UserEntity.builder()
+                .email(request.getEmail())
+                .username(request.getUsername())
+                .password(request.getPassword())
+                .notes(List.of())
+                .checkLists(List.of())
+                .language(request.getLanguage())
+                .blockedUsers(List.of())
+                .build();
+
+//        UserEntity user = new UserEntity(
+//                request.getEmail(),
+//                request.getUsername(),
+//                request.getPassword(),
+//                List.of(),
+//                List.of(),
+//                selectLanguage(request));
     }
 
     private String selectLanguage(RegisterRequest request) {

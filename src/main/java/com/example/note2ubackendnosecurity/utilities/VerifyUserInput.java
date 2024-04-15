@@ -12,6 +12,7 @@ import com.example.note2ubackendnosecurity.user.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -61,10 +62,35 @@ public class VerifyUserInput {
         }
     }
 
+    public void verifyAllFieldsOk(RegisterRequest request) {
+        verifyEmailFormat(request.getEmail());
+        verifyAcceptableUsername(request.getUsername());
+        passwordSufficientlyComplex(request.getPassword());
+        verifyLanguageOption(request.getLanguage());
+    }
+
+    private void verifyLanguageOption(String language) {
+        if(!language.equalsIgnoreCase("swedish") && !language.equalsIgnoreCase("english") ) {
+            throw new InvalidInputException("invalid language");
+        }
+    }
+
+    private void verifyAcceptableUsername(String username) {
+        if(username.isEmpty()) {
+            throw new InvalidInputException("invalid username");
+        }
+    }
+
     public void verifyIfNoteExists(String noteId) throws NoteMissingException {
         if(!noteRepo.existsById(UUID.fromString(noteId))) {
             throw new NoteMissingException("No such note found!");
         }
+    }
+
+    public void passwordSufficientlyComplex(String password) {
+        if(!password.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")) {
+            throw new InvalidInputException("invalid password");
+        };
     }
 
     public void verifyIfChecklistExists(String checklistID) throws NoteMissingException {

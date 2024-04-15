@@ -51,10 +51,13 @@ public class EntityToDtoConverter {
     }
 
     public RegisterResponse createRegisterResponse(UserEntity user) {
-        return new RegisterResponse(
-                user.getId().toString(),
-                user.getUsername(),
-                user.getEmail()
-        );
+
+        return null;
+
+        //        return new RegisterResponse(
+//                user.getId().toString(),
+//                user.getUsername(),
+//                user.getEmail()
+//        );
     }
 }

@@ -6,27 +6,32 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+@Builder
 @Entity
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Table(name = "users")
-public class UserEntity {
+public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id")
     private UUID id;
+
     private String email;
     private String username;
     private String password;
+
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
-//    @JoinColumn(name = "note_id")
     private List<NoteEntity> notes;
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
@@ -35,17 +40,40 @@ public class UserEntity {
 
     private String language;
 
-//    @ManyToMany(mappedBy = "user_id")
-//    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @OneToMany
     private List<UserEntity> blockedUsers;
 
-    public UserEntity(String email, String username, String password, List<NoteEntity> notes, List<UserEntity> blockedUsers, String language) {
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.notes = notes;
-        this.blockedUsers = blockedUsers;
-        this.language = language;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
     }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
+
+//    public UserEntity(String email, String username, String password, List<NoteEntity> notes, List<UserEntity> blockedUsers, String language) {
+//        this.email = email;
+//        this.username = username;
+//        this.password = password;
+//        this.notes = notes;
+//        this.blockedUsers = blockedUsers;
+//        this.language = language;
+//    }
 }
