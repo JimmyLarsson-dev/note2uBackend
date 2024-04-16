@@ -78,21 +78,23 @@ public class UserService {
         }
     }
 
+    ///Remove this method + endpoint!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public LoginResponse login(LoginRequest request) throws CredentialException, UserMissingException {
-        Optional<UserEntity> optionalUser = repo.findByUsername(request.getUsername());
-        if (optionalUser.isPresent()) {
-            if (optionalUser.get().getPassword().equals(request.getPassword())) {
-                return new LoginResponse(
-                        optionalUser.get().getId().toString(),
-                        optionalUser.get().getUsername(),
-                        optionalUser.get().getEmail()
-                );
-            } else {
-                throw new CredentialException("Incorrect credentials");
-            }
-        } else {
-            throw new UserMissingException("No such user found in database");
-        }
+//        Optional<UserEntity> optionalUser = repo.findByUsername(request.getUsername());
+//        if (optionalUser.isPresent()) {
+//            if (optionalUser.get().getPassword().equals(request.getPassword())) {
+//                return new LoginResponse(
+//                        optionalUser.get().getId().toString(),
+//                        optionalUser.get().getUsername(),
+//                        optionalUser.get().getEmail()
+//                );
+//            } else {
+//                throw new CredentialException("Incorrect credentials");
+//            }
+//        } else {
+//            throw new UserMissingException("No such user found in database");
+//        }
+        return null;
     }
 
     //lägg till funktion för att blocka per username!!!!!!!!!!!!!!!!!!!
