@@ -1,6 +1,7 @@
 package com.example.note2ubackendnosecurity.acceptNoteQuery;
 
 import com.example.note2ubackendnosecurity.acceptNoteQuery.DTOs.AcceptNoteRequest;
+import com.example.note2ubackendnosecurity.acceptNoteQuery.DTOs.DeclineNoteRequest;
 import com.example.note2ubackendnosecurity.acceptNoteQuery.DTOs.NoteQueryResponse;
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
@@ -26,5 +27,10 @@ public class AcceptNoteQueryController {
     @PostMapping("/acceptNote")
     public GetNoteResponse acceptNote(@RequestBody AcceptNoteRequest acceptNoteRequest) throws UserMissingException {
         return acceptNoteQueryService.acceptNote(acceptNoteRequest);
+    }
+
+    @PostMapping("/declineNote")
+    public String declineNote(@RequestBody DeclineNoteRequest request) {
+        return acceptNoteQueryService.declineNote(request);
     }
 }

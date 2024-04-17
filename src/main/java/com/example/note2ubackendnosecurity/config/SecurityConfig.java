@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
@@ -17,26 +17,26 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-//    private final JwtAuthenticationFilter jwtAuthFilter;
-//    private final AuthenticationProvider authenticationProvider;
-//    private final LogoutHandler logoutHandler;
+    private final AuthenticationProvider authenticationProvider;
     private final CorsConfigurationSource corsConfigurationSource;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(x -> x.configurationSource(corsConfigurationSource));
 
-        http
-                .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("api/auth/register").permitAll();
-                    auth.requestMatchers("api/note/createNote").authenticated();
-                });
+        http.authorizeHttpRequests((auth) -> auth
+                .requestMatchers("api/auth/register").permitAll()
+                .requestMatchers("api/auth/login").permitAll()
+                .anyRequest().authenticated()
+        );
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         http
-                .sessionManagement((session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)));
-
+                .sessionManagement((session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)));
         return http.build();
     }
 }

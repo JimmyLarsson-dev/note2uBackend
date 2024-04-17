@@ -1,7 +1,7 @@
 package com.example.note2ubackendnosecurity.utilities;
 
-import com.example.note2ubackendnosecurity.acceptNoteQuery.AcceptNoteQuery;
 import com.example.note2ubackendnosecurity.acceptNoteQuery.AcceptNoteQueryRepo;
+import com.example.note2ubackendnosecurity.acceptNoteQuery.DTOs.DeclineNoteRequest;
 import com.example.note2ubackendnosecurity.checklist.ChecklistRepo;
 import com.example.note2ubackendnosecurity.exceptions.*;
 import com.example.note2ubackendnosecurity.notes.NoteRepo;
@@ -12,8 +12,6 @@ import com.example.note2ubackendnosecurity.user.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -38,14 +36,16 @@ public class VerifyUserInput {
         }
     }
 
-    public void verifyNotInvitingSelfByEmail(String senderId, String recipientEmail) {
-        if(userRepo.findById(UUID.fromString(senderId)) == userRepo.findByEmail(recipientEmail)) {
+    public void verifyNotInvitingSelfByEmail(String senderId, String recipientEmail) throws UserMissingException {
+        verifyEmailExists(recipientEmail);
+        if(userRepo.findById(UUID.fromString(senderId)).get() == userRepo.findByEmail(recipientEmail).get()) {
             throw new InvalidInputException("cannot invite self");
         }
     }
 
-    public void verifyNotInvitingSelfByUsername(String senderId, String recipientUsername) {
-        if(userRepo.findById(UUID.fromString(senderId)) == userRepo.findByUsername(recipientUsername)) {
+    public void verifyNotInvitingSelfByUsername(String senderId, String recipientUsername) throws UserMissingException {
+        verifyUsernameExists(recipientUsername);
+        if(userRepo.findById(UUID.fromString(senderId)).get() == userRepo.findByUsername(recipientUsername).get()) {
             throw new InvalidInputException("cannot invite self");
         }
     }
@@ -126,12 +126,10 @@ public class VerifyUserInput {
         return !blockedList.isEmpty();
     }
 
-    public AcceptNoteQuery verifyIfAcceptNoteQueryExists(String requestId) {
-        Optional<AcceptNoteQuery> optionalAcceptNoteQuery = acceptNoteQueryRepo.findById(UUID.fromString(requestId));
-        if(optionalAcceptNoteQuery.isEmpty()) {
+    public void verifyIfAcceptNoteQueryExists(String requestId) {
+        if(!acceptNoteQueryRepo.existsById(UUID.fromString(requestId))) {
             throw new EntityNotFoundException("no such request");
         }
-        return optionalAcceptNoteQuery.get();
     }
 
     public void verifyChecklistForUser(String checklistId, UserEntity user) {
@@ -161,6 +159,13 @@ public class VerifyUserInput {
         }
         if (userRepo.findByUsername(request.getUsername()).isPresent()) {
             throw new UserNameAlreadyExistsException("Username already registered");
+        }
+    }
+
+    public void verifyThatRecipientAndQueryMatch(DeclineNoteRequest request) {
+        if(!acceptNoteQueryRepo.findById(UUID.fromString(request.getRequestId()))
+                .get().getRecipientId().toString().equals(request.getUserId())) {
+            throw new InvalidInputException("user / query mismatch");
         }
     }
 }

@@ -49,15 +49,4 @@ public class EntityToDtoConverter {
                 user.getEmail(),
                 user.getUsername());
     }
-
-    public RegisterResponse createRegisterResponse(UserEntity user) {
-
-        return null;
-
-        //        return new RegisterResponse(
-//                user.getId().toString(),
-//                user.getUsername(),
-//                user.getEmail()
-//        );
-    }
 }

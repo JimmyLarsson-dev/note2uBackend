@@ -98,12 +98,10 @@ public class NoteService {
 
     public List<GetNoteResponse> getAllMyNotesAndChecklists(String userId) throws UserMissingException {
         Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(userId));
-
         verifyUserInput.verifyIfUserExists(userId);
 
         List<GetNoteResponse> getNoteList = new ArrayList<>();
         List<ChecklistResponse> getCheckListList = new ArrayList<>();
-
 
         if (!optionalUser.get().getNotes().isEmpty()) {
 //                optionalUser.get().getNotes()
