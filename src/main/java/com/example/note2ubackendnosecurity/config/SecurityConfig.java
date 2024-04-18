@@ -33,7 +33,8 @@ public class SecurityConfig {
                 .requestMatchers("api/auth/login").permitAll()
                 .anyRequest().authenticated()
         );
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.addFilterAfter(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         http
                 .sessionManagement((session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)));

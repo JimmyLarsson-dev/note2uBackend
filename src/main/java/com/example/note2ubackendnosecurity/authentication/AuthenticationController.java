@@ -1,5 +1,6 @@
 package com.example.note2ubackendnosecurity.authentication;
 
+import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.user.DTOs.LoginRequest;
 import com.example.note2ubackendnosecurity.user.DTOs.LoginResponse;
@@ -26,8 +27,14 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
+//    @PostMapping("/login")
+//    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) throws UserMissingException, InvalidInputException {
+//        return ResponseEntity.ok(authenticationService.login(request)) ;
+//    }
+
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) throws UserMissingException {
-        return ResponseEntity.ok(authenticationService.login(request));
+    public LoginResponse login(@RequestBody LoginRequest request) throws UserMissingException, InvalidInputException {
+        return authenticationService.login(request) ;
     }
+
 }

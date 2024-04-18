@@ -1,40 +1,46 @@
-package com.example.note2ubackendnosecurity;
-
-import com.example.note2ubackendnosecurity.checklist.ChecklistEntity;
-import com.example.note2ubackendnosecurity.checklist.ChecklistRepo;
-import com.example.note2ubackendnosecurity.checklist.Item;
-import com.example.note2ubackendnosecurity.checklist.UserViewedMap;
-import com.example.note2ubackendnosecurity.notes.NoteEntity;
-import com.example.note2ubackendnosecurity.notes.NoteRepo;
-import com.example.note2ubackendnosecurity.user.UserEntity;
-import com.example.note2ubackendnosecurity.user.UserRepo;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.List;
-import java.util.UUID;
-
-@Configuration
-public class StartUpConfig {
+//package com.example.note2ubackendnosecurity;
+//
+//import com.example.note2ubackendnosecurity.checklist.ChecklistEntity;
+//import com.example.note2ubackendnosecurity.checklist.ChecklistRepo;
+//import com.example.note2ubackendnosecurity.checklist.Item;
+//import com.example.note2ubackendnosecurity.checklist.UserViewedMap;
+//import com.example.note2ubackendnosecurity.notes.NoteEntity;
+//import com.example.note2ubackendnosecurity.notes.NoteRepo;
+//import com.example.note2ubackendnosecurity.user.UserEntity;
+//import com.example.note2ubackendnosecurity.user.UserRepo;
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.security.crypto.password.PasswordEncoder;
+//
+//import java.util.List;
+//import java.util.UUID;
+//
+//@Configuration
+//public class StartUpConfig {
 
     //Den här klassen används för att skapa några poster i databasen för att
     // ha något att jobba med under utvecklingen
 
-    private final UserRepo userRepo;
-    private final NoteRepo noteRepo;
-    private final ChecklistRepo checklistRepo;
-    private final PasswordEncoder passwordEncoder;
-
-    public StartUpConfig(UserRepo userRepo, NoteRepo noteRepo, ChecklistRepo checklistRepo, PasswordEncoder passwordEncoder) {
-        this.userRepo = userRepo;
-        this.noteRepo = noteRepo;
-        this.checklistRepo = checklistRepo;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    @Bean
-    public void autoCreateUsers() {
+//    private final UserRepo userRepo;
+//    private final NoteRepo noteRepo;
+//    private final ChecklistRepo checklistRepo;
+//    private final PasswordEncoder passwordEncoder;
+//
+//    UUID UUID1 = UUID.fromString("9cbb5e51-76d6-4d3b-b60e-5c99e1767d13");
+//    UUID UUID2 = UUID.fromString("fd9ef357-1552-4b3a-a8e6-17b0b5409aa0");
+//    UUID UUID3 = UUID.fromString("8b26cf6d-4b87-4c3d-b861-2a5797bca1d9");
+//    UUID UUID4 = UUID.fromString("57917a38-af4e-4897-aa58-940f5b0d7784");
+//    UUID UUID5 = UUID.fromString("c98bf3f7-4b35-4f9f-82df-6f4a6b7f7e2c");
+//
+//    public StartUpConfig(UserRepo userRepo, NoteRepo noteRepo, ChecklistRepo checklistRepo, PasswordEncoder passwordEncoder) {
+//        this.userRepo = userRepo;
+//        this.noteRepo = noteRepo;
+//        this.checklistRepo = checklistRepo;
+//        this.passwordEncoder = passwordEncoder;
+//    }
+//
+//    @Bean
+//    public void autoCreateUsers() {
 //        NoteEntity note1 = new NoteEntity();
 //        UserEntity user1 = UserEntity.builder()
 //                .id(UUID.randomUUID())
@@ -46,11 +52,17 @@ public class StartUpConfig {
 //                .language("swedish")
 //                .blockedUsers(List.of())
 //                .build();
+//
+//        userRepo.save(user1);
+//        note1.setId(UUID1);
 //        note1.setUsers(List.of(user1));
 //        note1.setTitle("init note1");
 //        note1.setContent("Note1, initialized by Startupconfig.");
 //        note1.setStatusBeenViewed(false);
-//
+//        noteRepo.save(note1);
+//        user1.getNotes().add(noteRepo.findById(UUID1).get());
+//        userRepo.save(user1);
+
 //        NoteEntity note2 = new NoteEntity();
 //        UserEntity user2 = UserEntity.builder()
 //                .id(UUID.randomUUID())
@@ -62,10 +74,14 @@ public class StartUpConfig {
 //                .language("swedish")
 //                .blockedUsers(List.of())
 //                .build();
+//        userRepo.save(user2);
 //        note2.setUsers(List.of(user2));
 //        note2.setTitle("init note2");
 //        note2.setContent("Note2, initialized by Startupconfig.");
 //        note2.setStatusBeenViewed(false);
+//        noteRepo.save(note2);
+//        user2.getNotes().add(note2);
+//        userRepo.save(user2);
 //
 //        NoteEntity note3 = new NoteEntity();
 //        UserEntity user3 = UserEntity.builder()
@@ -78,10 +94,14 @@ public class StartUpConfig {
 //                .language("swedish")
 //                .blockedUsers(List.of())
 //                .build();
+//        userRepo.save(user3);
 //        note3.setUsers(List.of(user3));
 //        note3.setTitle("init note3");
 //        note3.setContent("Note3, initialized by Startupconfig.");
 //        note3.setStatusBeenViewed(false);
+//        noteRepo.save(note3);
+//        user3.getNotes().add(note3);
+//        userRepo.save(user3);
 //
 //        NoteEntity note4 = new NoteEntity();
 //        UserEntity user4 = UserEntity.builder()
@@ -94,10 +114,14 @@ public class StartUpConfig {
 //                .language("english")
 //                .blockedUsers(List.of())
 //                .build();
+//        userRepo.save(user4);
 //        note4.setUsers(List.of(user4));
 //        note4.setTitle("init note4");
 //        note4.setContent("Note4, initialized by Startupconfig.");
 //        note4.setStatusBeenViewed(false);
+//        noteRepo.save(note4);
+//        user4.getNotes().add(note4);
+//        userRepo.save(user4);
 //
 //        NoteEntity note5 = new NoteEntity();
 //        UserEntity user5 = UserEntity.builder()
@@ -110,16 +134,20 @@ public class StartUpConfig {
 //                .language("english")
 //                .blockedUsers(List.of())
 //                .build();
+//        userRepo.save(user5);
 //        note5.setUsers(List.of(user5));
 //        note5.setTitle("init note5");
 //        note5.setContent("Note5, initialized by Startupconfig.");
 //        note5.setStatusBeenViewed(false);
-//
-//        noteRepo.save(note1);
-//        noteRepo.save(note2);
-//        noteRepo.save(note3);
-//        noteRepo.save(note4);
 //        noteRepo.save(note5);
+//        user5.getNotes().add(note5);
+//        userRepo.save(user5);
+//
+////        noteRepo.save(note1);
+////        noteRepo.save(note2);
+////        noteRepo.save(note3);
+////        noteRepo.save(note4);
+////        noteRepo.save(note5);
 //
 //        Item item1 = new Item(UUID.randomUUID(), "buy apples", false);
 //        Item item2 = new Item(UUID.randomUUID(), "clean living room", false);
@@ -183,15 +211,15 @@ public class StartUpConfig {
 //        userViewedMap2.setNoteOrChecklistId(checklist2.getId());
 //        userViewedMap3.setNoteOrChecklistId(checklist3.getId());
 //
-//        userRepo.save(user1);
-//        userRepo.save(user2);
-//        userRepo.save(user3);
-//        userRepo.save(user4);
-//        userRepo.save(user5);
+////        userRepo.save(user1);
+////        userRepo.save(user2);
+////        userRepo.save(user3);
+////        userRepo.save(user4);
+////        userRepo.save(user5);
 //
 //        checklistRepo.save(checklist1);
 //        checklistRepo.save(checklist2);
 //        checklistRepo.save(checklist3);
 
-    }
-}
+//    }
+//}

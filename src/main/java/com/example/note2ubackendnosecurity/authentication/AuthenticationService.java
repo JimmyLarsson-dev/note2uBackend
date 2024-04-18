@@ -1,6 +1,7 @@
 package com.example.note2ubackendnosecurity.authentication;
 
 import com.example.note2ubackendnosecurity.config.JwtService;
+import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.token.Token;
 import com.example.note2ubackendnosecurity.token.TokenType;
@@ -18,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Service
 @RequiredArgsConstructor
@@ -60,9 +62,14 @@ public class AuthenticationService {
                 .build();
     }
 
-    public LoginResponse login(LoginRequest request) throws UserMissingException {
+    public LoginResponse login(LoginRequest request) throws UserMissingException, InvalidInputException {
         verifyUserInput.verifyUsernameExists(request.getUsername());
         UserEntity user = userRepo.findByUsername(request.getUsername()).get();
+
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new InvalidInputException("Wrong");
+        }
+
         String jwt = jwtService.generateToken(user);
         return new LoginResponse(
                 user.getId().toString(),
