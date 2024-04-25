@@ -29,10 +29,10 @@ public class NoteEntity {
     @JoinColumn(name = "userId")
     private List<UserEntity> users;
 
-    public NoteEntity(String title, String content, UserEntity user, Boolean statusBeenViewed) {
+    public NoteEntity(String title, String content, Boolean statusBeenViewed, List<UserEntity> users) {
         this.title = title;
         this.content = content;
-        this.users = List.of(user);
+        this.users = users;
         this.statusBeenViewed = statusBeenViewed;
     }
 }

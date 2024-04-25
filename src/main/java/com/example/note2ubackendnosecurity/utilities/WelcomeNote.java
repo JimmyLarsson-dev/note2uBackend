@@ -9,30 +9,16 @@ public class WelcomeNote {
 
     public String getWelcomeLable(String language) {
 
-        switch (language) {
-            case "swedish" -> {
-                return "Välkommen";
-            }
-            case "german" -> {
-                return "Willkommen";
-            }
-            default -> {
-                return "Welcome";
-            }
+        if (language.equals("swedish")) {
+            return "Välkommen";
         }
+        return "Welcome";
     }
 
     public String getWelcomeContent(String language) {
-        switch (language) {
-            case "swedish" -> {
-                return "Information om appen på svenska";
-            }
-            case "german" -> {
-                return "Information in deutsch";
-            }
-            default -> {
-                return "Information in english";
-            }
+        if (language.equals("swedish")) {
+            return "Information om appen på svenska";
         }
+        return "Information in english";
     }
 }

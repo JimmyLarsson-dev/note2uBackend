@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Builder
 @Entity
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
@@ -67,13 +67,4 @@ public class UserEntity implements UserDetails {
     public boolean isEnabled() {
         return false;
     }
-
-//    public UserEntity(String email, String username, String password, List<NoteEntity> notes, List<UserEntity> blockedUsers, String language) {
-//        this.email = email;
-//        this.username = username;
-//        this.password = password;
-//        this.notes = notes;
-//        this.blockedUsers = blockedUsers;
-//        this.language = language;
-//    }
 }

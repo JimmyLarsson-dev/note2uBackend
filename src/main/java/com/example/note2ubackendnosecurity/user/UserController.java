@@ -3,7 +3,6 @@ package com.example.note2ubackendnosecurity.user;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.user.DTOs.*;
 import org.springframework.web.bind.annotation.*;
-
 import javax.security.auth.login.CredentialException;
 
 @RestController
@@ -17,15 +16,6 @@ public class UserController {
         this.service = service;
     }
 
-    @PostMapping("/register")
-    public RegisterResponse register(@RequestBody RegisterRequest request) {
-        return service.register(request);
-    }
-
-    @PostMapping("/login")
-    public LoginResponse Login(@RequestBody LoginRequest request) throws UserMissingException, CredentialException {
-        return service.login(request);
-    }
 
     @PostMapping("/blockUser")
     public String blockUser(@RequestBody BlockRequest request) throws UserMissingException {
@@ -36,4 +26,7 @@ public class UserController {
     public String unblockUser(@RequestBody BlockRequest request) throws UserMissingException {
         return service.unblockUser(request);
     }
+
+
+
 }

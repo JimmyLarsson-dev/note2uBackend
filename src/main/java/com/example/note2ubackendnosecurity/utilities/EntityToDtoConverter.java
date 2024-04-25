@@ -2,11 +2,9 @@ package com.example.note2ubackendnosecurity.utilities;
 
 import com.example.note2ubackendnosecurity.notes.DTOs.GetNoteResponse;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
-import com.example.note2ubackendnosecurity.user.DTOs.RegisterResponse;
 import com.example.note2ubackendnosecurity.user.DTOs.UserInNoteOrChecklist;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
