@@ -10,7 +10,6 @@ import com.example.note2ubackendnosecurity.user.UserRepo;
 import com.example.note2ubackendnosecurity.utilities.VerifyUserInput;
 import com.example.note2ubackendnosecurity.utilities.EntityToDtoConverter;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -64,7 +63,6 @@ public class ChecklistService {
                 userViewedMap
         );
     }
-
 
     public ChecklistResponse updateChecklist(UpdateChecklistRequest request) throws UserMissingException, NoteMissingException {
         verifyUserInput.verifyIfUserExists(request.getUserId());

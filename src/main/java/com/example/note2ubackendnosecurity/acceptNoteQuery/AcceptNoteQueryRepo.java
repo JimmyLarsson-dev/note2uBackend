@@ -9,6 +9,4 @@ import java.util.UUID;
 public interface AcceptNoteQueryRepo extends JpaRepository<AcceptNoteQuery, UUID> {
 
     Optional<AcceptNoteQuery> findByRecipientId(UUID recipientId);
-    Optional<AcceptNoteQuery> findBySenderId(UUID senderId);
-
 }

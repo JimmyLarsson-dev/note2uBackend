@@ -4,7 +4,6 @@ import com.example.note2ubackendnosecurity.checklist.ItemDTO;
 import com.example.note2ubackendnosecurity.user.DTOs.UserInNoteOrChecklist;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
 import java.util.List;
 
 @Data

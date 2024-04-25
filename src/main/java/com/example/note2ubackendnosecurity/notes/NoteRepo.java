@@ -6,7 +6,4 @@ import java.util.UUID;
 
 @Repository
 public interface NoteRepo extends JpaRepository<NoteEntity, UUID> {
-
-
-//    Optional<NoteEntity> findByUserId(UUID uuid);
 }

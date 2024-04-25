@@ -18,7 +18,6 @@ import java.util.UUID;
 public class ChecklistEntity {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name= "checklist_id")
     UUID id;
     private String title;
@@ -37,16 +36,6 @@ public class ChecklistEntity {
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "mapId")
     private UserViewedMap hasBeenViewed;
-
-    public ChecklistEntity(String title,
-                           List<Item> itemList,
-                           UserEntity user,
-                           UserViewedMap statusHasBeenViewed) {
-        this.title = title;
-        this.itemList = itemList;
-        this.users = List.of(user);
-        this.hasBeenViewed = statusHasBeenViewed;
-    }
 
     public ChecklistEntity(UUID id,
                            String title,

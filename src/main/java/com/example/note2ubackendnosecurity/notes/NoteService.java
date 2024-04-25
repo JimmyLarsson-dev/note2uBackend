@@ -1,6 +1,5 @@
 package com.example.note2ubackendnosecurity.notes;
 
-import com.example.note2ubackendnosecurity.acceptNoteQuery.AcceptNoteQueryRepo;
 import com.example.note2ubackendnosecurity.checklist.DTOs.ChecklistResponse;
 import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
@@ -12,7 +11,6 @@ import com.example.note2ubackendnosecurity.utilities.InvitationsHandler;
 import com.example.note2ubackendnosecurity.utilities.VerifyUserInput;
 import com.example.note2ubackendnosecurity.utilities.EntityToDtoConverter;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +48,7 @@ public class NoteService {
     }
 
     private String createNoteAndReturnNoteId(CreateNoteRequest request, Optional<UserEntity> user) {
-        NoteEntity note = new NoteEntity(request.getTitle(), request.getContent(), user.get(), false);
+        NoteEntity note = new NoteEntity(request.getTitle(), request.getContent(), false, List.of(user.get()));
         noteRepo.save(note);
         return note.getId().toString();
     }
@@ -99,13 +97,9 @@ public class NoteService {
     public List<GetNoteResponse> getAllMyNotesAndChecklists(String userId) throws UserMissingException {
         Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(userId));
         verifyUserInput.verifyIfUserExists(userId);
-
         List<GetNoteResponse> getNoteList = new ArrayList<>();
         List<ChecklistResponse> getCheckListList = new ArrayList<>();
-
         if (!optionalUser.get().getNotes().isEmpty()) {
-//                optionalUser.get().getNotes()
-//                        .forEach(x -> dtoList.add(new GetNoteResponse(x.getId(), x.getTitle(), x.getContent(), x.getUsers())));
             for (int i = 0; i < optionalUser.get().getNotes().size(); i++) {
                 getNoteList.add(new GetNoteResponse(
                         optionalUser.get().getNotes().get(i).getId().toString(),

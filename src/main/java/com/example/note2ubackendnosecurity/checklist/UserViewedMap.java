@@ -1,14 +1,11 @@
 package com.example.note2ubackendnosecurity.checklist;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.UUID;
 
 @Entity
@@ -19,7 +16,6 @@ import java.util.UUID;
 public class UserViewedMap {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID mapId;
     private UUID noteOrChecklistId;
     private UUID userId;

@@ -17,16 +17,9 @@ import com.example.note2ubackendnosecurity.utilities.LanguageService;
 import com.example.note2ubackendnosecurity.utilities.VerifyUserInput;
 import com.example.note2ubackendnosecurity.utilities.WelcomeNote;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +27,6 @@ public class AuthenticationService {
 
     private final VerifyUserInput verifyUserInput;
     private final PasswordEncoder passwordEncoder;
-
     private  final JwtService jwtService;
     private final UserRepo userRepo;
     private final LanguageService languageService;

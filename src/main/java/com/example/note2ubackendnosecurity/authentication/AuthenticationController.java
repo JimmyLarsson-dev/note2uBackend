@@ -36,5 +36,4 @@ public class AuthenticationController {
     public LoginResponse login(@RequestBody LoginRequest request) throws UserMissingException, InvalidInputException {
         return authenticationService.login(request) ;
     }
-
 }
