@@ -42,7 +42,7 @@ public class NoteService {
         verifyUserInput.verifyIfUserExists(request.getUserId());
         Optional<UserEntity> user = userRepo.findById(UUID.fromString(request.getUserId()));
         if (request.getTitle() == null) {
-            request.setTitle(" ");
+            request.setTitle("New note");
         }
         return createNoteAndReturnNoteId(request, user);
     }

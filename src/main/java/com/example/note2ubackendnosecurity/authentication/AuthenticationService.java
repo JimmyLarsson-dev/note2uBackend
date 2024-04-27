@@ -40,6 +40,8 @@ public class AuthenticationService {
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
+                .notes(List.of())
+                .checkLists(List.of())
                 .language(languageService.selectLanguage(request.getLanguage()))
                 .build();
         userRepo.save(user);
@@ -50,7 +52,7 @@ public class AuthenticationService {
                 List.of(user)
         );
         noteRepo.save(note);
-        user.getNotes().add(note);
+//        user.getNotes().add(note);
         userRepo.save(user);
         String jwt = jwtService.generateToken(user);
         saveUserToken(user, jwt);

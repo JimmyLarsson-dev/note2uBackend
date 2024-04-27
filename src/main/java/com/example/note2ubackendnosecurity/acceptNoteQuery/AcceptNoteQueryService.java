@@ -48,8 +48,10 @@ public class AcceptNoteQueryService {
         if(optionalAcceptNoteQuery.isEmpty()) {
             throw new NoteMissingException("No new notes");
         }
-        String senderUsername = userRepo.findById(optionalAcceptNoteQuery.get().getSenderId()).get().getUsername();
-        String noteTitle = noteRepo.findById(optionalAcceptNoteQuery.get().getItemId()).get().getTitle();
+        String senderUsername = userRepo.findById(optionalAcceptNoteQuery.get()
+                .getSenderId()).get().getUsername();
+        String noteTitle = noteRepo.findById(optionalAcceptNoteQuery.get()
+                .getItemId()).get().getTitle();
         return new NoteQueryResponse(
                 senderUsername,
                 noteTitle,
