@@ -1,7 +1,7 @@
 package com.example.note2ubackendnosecurity.utilities;
 
-import com.example.note2ubackendnosecurity.acceptNoteQuery.AcceptNoteQueryRepo;
-import com.example.note2ubackendnosecurity.acceptNoteQuery.DTOs.DeclineNoteRequest;
+import com.example.note2ubackendnosecurity.invitation.InvitationRepo;
+import com.example.note2ubackendnosecurity.invitation.DTOs.DeclineNoteRequest;
 import com.example.note2ubackendnosecurity.checklist.ChecklistRepo;
 import com.example.note2ubackendnosecurity.exceptions.*;
 import com.example.note2ubackendnosecurity.notes.NoteRepo;
@@ -20,13 +20,13 @@ public class VerifyUserInput {
     private final NoteRepo noteRepo;
     private final UserRepo userRepo;
     private final ChecklistRepo checklistRepo;
-    private final AcceptNoteQueryRepo acceptNoteQueryRepo;
+    private final InvitationRepo invitationRepo;
 
-    public VerifyUserInput(NoteRepo noteRepo, UserRepo userRepo, ChecklistRepo checklistRepo, AcceptNoteQueryRepo acceptNoteQueryRepo) {
+    public VerifyUserInput(NoteRepo noteRepo, UserRepo userRepo, ChecklistRepo checklistRepo, InvitationRepo invitationRepo) {
         this.noteRepo = noteRepo;
         this.userRepo = userRepo;
         this.checklistRepo = checklistRepo;
-        this.acceptNoteQueryRepo = acceptNoteQueryRepo;
+        this.invitationRepo = invitationRepo;
     }
 
     public void verifyEmailFormat(String email) {
@@ -127,7 +127,7 @@ public class VerifyUserInput {
     }
 
     public void verifyIfAcceptNoteQueryExists(String requestId) {
-        if(!acceptNoteQueryRepo.existsById(UUID.fromString(requestId))) {
+        if(!invitationRepo.existsById(UUID.fromString(requestId))) {
             throw new EntityNotFoundException("no such request");
         }
     }
@@ -163,7 +163,7 @@ public class VerifyUserInput {
     }
 
     public void verifyThatRecipientAndQueryMatch(DeclineNoteRequest request) {
-        if(!acceptNoteQueryRepo.findById(UUID.fromString(request.getRequestId()))
+        if(!invitationRepo.findById(UUID.fromString(request.getRequestId()))
                 .get().getRecipientId().toString().equals(request.getUserId())) {
             throw new InvalidInputException("user / query mismatch");
         }

@@ -1,4 +1,4 @@
-package com.example.note2ubackendnosecurity.acceptNoteQuery;
+package com.example.note2ubackendnosecurity.invitation;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,8 +12,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name="SendNoteAcceptQuery")
-public class AcceptNoteQuery {
+@Table(name="invitation")
+public class Invitation {
 
     @Id
     private UUID requestId;

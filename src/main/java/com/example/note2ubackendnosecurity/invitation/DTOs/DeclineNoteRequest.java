@@ -1,4 +1,4 @@
-package com.example.note2ubackendnosecurity.acceptNoteQuery.DTOs;
+package com.example.note2ubackendnosecurity.invitation.DTOs;
 
 import lombok.Data;
 

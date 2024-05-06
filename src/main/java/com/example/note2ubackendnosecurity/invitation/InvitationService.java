@@ -1,8 +1,8 @@
-package com.example.note2ubackendnosecurity.acceptNoteQuery;
+package com.example.note2ubackendnosecurity.invitation;
 
-import com.example.note2ubackendnosecurity.acceptNoteQuery.DTOs.AcceptNoteRequest;
-import com.example.note2ubackendnosecurity.acceptNoteQuery.DTOs.DeclineNoteRequest;
-import com.example.note2ubackendnosecurity.acceptNoteQuery.DTOs.NoteQueryResponse;
+import com.example.note2ubackendnosecurity.invitation.DTOs.InvitationRequest;
+import com.example.note2ubackendnosecurity.invitation.DTOs.DeclineNoteRequest;
+import com.example.note2ubackendnosecurity.invitation.DTOs.InvitationResponse;
 import com.example.note2ubackendnosecurity.checklist.ChecklistEntity;
 import com.example.note2ubackendnosecurity.checklist.ChecklistRepo;
 import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
@@ -16,86 +16,88 @@ import com.example.note2ubackendnosecurity.user.UserRepo;
 import com.example.note2ubackendnosecurity.utilities.VerifyUserInput;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
+
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class AcceptNoteQueryService {
+public class InvitationService {
 
     private final VerifyUserInput verifyUserInput;
-    private final AcceptNoteQueryRepo acceptNoteQueryRepo;
+    private final InvitationRepo invitationRepo;
     private final NoteRepo noteRepo;
     private final ChecklistRepo checklistRepo;
     private final UserRepo userRepo;
 
-    public AcceptNoteQueryService(
+    public InvitationService(
             VerifyUserInput verifyUserInput,
-            AcceptNoteQueryRepo acceptNoteQueryRepo,
+            InvitationRepo invitationRepo,
             NoteRepo noteRepo,
             ChecklistRepo checklistRepo,
             UserRepo userRepo) {
         this.verifyUserInput = verifyUserInput;
-        this.acceptNoteQueryRepo = acceptNoteQueryRepo;
+        this.invitationRepo = invitationRepo;
         this.noteRepo = noteRepo;
         this.checklistRepo = checklistRepo;
         this.userRepo = userRepo;
     }
 
-    public NoteQueryResponse checkReceivedNotes(String userId) throws NoteMissingException, UserMissingException {
+    //TODO hantera detta snyggare! Nu returneras bara den första i en lista, borde returnera alla inbjudningar!!!!!!!
+    public InvitationResponse checkReceivedNotes(String userId) throws NoteMissingException, UserMissingException {
         verifyUserInput.verifyIfUserExists(userId);
-        Optional<AcceptNoteQuery> optionalAcceptNoteQuery = acceptNoteQueryRepo.findByRecipientId(UUID.fromString(userId));
-        if(optionalAcceptNoteQuery.isEmpty()) {
+        List<Invitation> optionalInvitation = invitationRepo.findByRecipientId(UUID.fromString(userId));
+        if(optionalInvitation.isEmpty()) {
             throw new NoteMissingException("No new notes");
         }
-        String senderUsername = userRepo.findById(optionalAcceptNoteQuery.get()
+        String senderUsername = userRepo.findById(optionalInvitation.get(0)
                 .getSenderId()).get().getUsername();
-        String noteTitle = noteRepo.findById(optionalAcceptNoteQuery.get()
+        String noteTitle = noteRepo.findById(optionalInvitation.get(0)
                 .getItemId()).get().getTitle();
-        return new NoteQueryResponse(
+        return new InvitationResponse(
                 senderUsername,
                 noteTitle,
-                optionalAcceptNoteQuery.get().getRequestId().toString(),
-                optionalAcceptNoteQuery.get().getItemId().toString());
+                optionalInvitation.get(0).getRequestId().toString(),
+                optionalInvitation.get(0).getItemId().toString());
     }
 
-    public GetNoteResponse acceptNote(AcceptNoteRequest acceptNoteRequest) {
-        verifyUserInput.verifyIfAcceptNoteQueryExists(acceptNoteRequest.getRequestId());
-        AcceptNoteQuery acceptNoteQuery = acceptNoteQueryRepo.findById(UUID.fromString(acceptNoteRequest.getRequestId())).get();
-        if(!acceptNoteQuery.getRecipientId().toString().equals(acceptNoteRequest.getUserId())) {
+    public GetNoteResponse acceptNote(InvitationRequest invitationRequest) {
+        verifyUserInput.verifyIfAcceptNoteQueryExists(invitationRequest.getRequestId());
+        Invitation invitation = invitationRepo.findById(UUID.fromString(invitationRequest.getRequestId())).get();
+        if(!invitation.getRecipientId().toString().equals(invitationRequest.getUserId())) {
             throw new InvalidInputException("no access");
         }
-        boolean isChecklist = addUserToNoteOrChecklist(acceptNoteRequest.getUserId(), acceptNoteRequest.getItemId());
+        boolean isChecklist = addUserToNoteOrChecklist(invitationRequest.getUserId(), invitationRequest.getItemId());
         return isChecklist ?
-                getNoteResponseChecklist(acceptNoteRequest, acceptNoteQuery)
+                getNoteResponseChecklist(invitationRequest, invitation)
                 :
-                getNoteResponseNote(acceptNoteRequest, acceptNoteQuery);
+                getNoteResponseNote(invitationRequest, invitation);
     }
 
-    private GetNoteResponse getNoteResponseChecklist(AcceptNoteRequest acceptNoteRequest, AcceptNoteQuery acceptNoteQuery) {
-        ChecklistEntity checklist = checklistRepo.findById(UUID.fromString(acceptNoteRequest.getItemId())).get();
+    private GetNoteResponse getNoteResponseChecklist(InvitationRequest invitationRequest, Invitation invitation) {
+        ChecklistEntity checklist = checklistRepo.findById(UUID.fromString(invitationRequest.getItemId())).get();
         GetNoteResponse getNoteResponse = new GetNoteResponse(
-            acceptNoteRequest.getItemId(),
+            invitationRequest.getItemId(),
             checklist.getTitle(),
             checklist.getItemList(),
             checklist
                     .getUsers().stream().map(user -> user.getId()).collect(Collectors.toList()),
             false);
-        acceptNoteQueryRepo.deleteById(UUID.fromString(acceptNoteRequest.getItemId()));
+        invitationRepo.deleteById(UUID.fromString(invitationRequest.getItemId()));
         return getNoteResponse;
     }
 
-    private GetNoteResponse getNoteResponseNote(AcceptNoteRequest acceptNoteRequest, AcceptNoteQuery acceptNoteQuery) {
-        NoteEntity note = noteRepo.findById(UUID.fromString(acceptNoteRequest.getItemId())).get();
+    private GetNoteResponse getNoteResponseNote(InvitationRequest invitationRequest, Invitation invitation) {
+        NoteEntity note = noteRepo.findById(UUID.fromString(invitationRequest.getItemId())).get();
 
         GetNoteResponse getNoteResponse =  new GetNoteResponse(
-            acceptNoteRequest.getItemId(),
-            acceptNoteQuery.getTitle(),
+            invitationRequest.getItemId(),
+            invitation.getTitle(),
             note.getContent(),
             note.getUsers()
                     .stream().map(user -> user.getId()).collect(Collectors.toList()),
             false);
-        acceptNoteQueryRepo.deleteById(UUID.fromString(acceptNoteRequest.getItemId()));
+        invitationRepo.deleteById(UUID.fromString(invitationRequest.getItemId()));
         return getNoteResponse;
     }
 
@@ -121,7 +123,7 @@ public class AcceptNoteQueryService {
 
         verifyUserInput.verifyIfAcceptNoteQueryExists(request.getRequestId());
         verifyUserInput.verifyThatRecipientAndQueryMatch(request);
-        acceptNoteQueryRepo.deleteById(UUID.fromString(request.getRequestId()));
+        invitationRepo.deleteById(UUID.fromString(request.getRequestId()));
         return "invitation declined";
     }
 }

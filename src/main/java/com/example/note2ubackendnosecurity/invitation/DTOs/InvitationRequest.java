@@ -1,9 +1,9 @@
-package com.example.note2ubackendnosecurity.acceptNoteQuery.DTOs;
+package com.example.note2ubackendnosecurity.invitation.DTOs;
 
 import lombok.Data;
 
 @Data
-public class AcceptNoteRequest {
+public class InvitationRequest {
 
     private String requestId;
     private String itemId;

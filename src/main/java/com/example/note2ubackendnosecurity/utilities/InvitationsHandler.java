@@ -1,7 +1,7 @@
 package com.example.note2ubackendnosecurity.utilities;
 
-import com.example.note2ubackendnosecurity.acceptNoteQuery.AcceptNoteQuery;
-import com.example.note2ubackendnosecurity.acceptNoteQuery.AcceptNoteQueryRepo;
+import com.example.note2ubackendnosecurity.invitation.Invitation;
+import com.example.note2ubackendnosecurity.invitation.InvitationRepo;
 import com.example.note2ubackendnosecurity.checklist.ChecklistRepo;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
 import com.example.note2ubackendnosecurity.notes.DTOs.InvitationRequest;
@@ -15,19 +15,19 @@ import java.util.UUID;
 @Service
 public class InvitationsHandler {
 
-    private final AcceptNoteQueryRepo acceptNoteQueryRepo;
+    private final InvitationRepo invitationRepo;
     private final VerifyUserInput verifyUserInput;
     private final UserRepo userRepo;
     private final NoteRepo noteRepo;
     private final ChecklistRepo checklistRepo;
 
     public InvitationsHandler(
-            AcceptNoteQueryRepo acceptNoteQueryRepo,
+            InvitationRepo invitationRepo,
             VerifyUserInput verifyUserInput,
             UserRepo userRepo,
             NoteRepo noteRepo,
             ChecklistRepo checklistRepo) {
-        this.acceptNoteQueryRepo = acceptNoteQueryRepo;
+        this.invitationRepo = invitationRepo;
         this.verifyUserInput = verifyUserInput;
         this.userRepo = userRepo;
         this.noteRepo = noteRepo;
@@ -35,7 +35,7 @@ public class InvitationsHandler {
     }
 
     private void createAcceptNoteQuery(InvitationRequest request, UserEntity user) {
-        acceptNoteQueryRepo.save(new AcceptNoteQuery(
+        invitationRepo.save(new Invitation(
                 UUID.randomUUID(),
                 noteOrChecklist(UUID.fromString(request.getItemId())),
                 UUID.fromString(request.getItemId()),

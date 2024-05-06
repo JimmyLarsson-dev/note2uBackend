@@ -1,11 +1,11 @@
-package com.example.note2ubackendnosecurity.acceptNoteQuery.DTOs;
+package com.example.note2ubackendnosecurity.invitation.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class NoteQueryResponse {
+public class InvitationResponse {
     private String senderUsername;
     private String noteTitle;
     private String requestId;
