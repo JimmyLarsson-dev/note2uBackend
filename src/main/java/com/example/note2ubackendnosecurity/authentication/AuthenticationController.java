@@ -7,10 +7,7 @@ import com.example.note2ubackendnosecurity.user.DTOs.LoginResponse;
 import com.example.note2ubackendnosecurity.user.DTOs.RegisterRequest;
 import com.example.note2ubackendnosecurity.user.DTOs.RegisterResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/auth")
@@ -27,13 +24,13 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) throws UserMissingException, InvalidInputException {
-//        return ResponseEntity.ok(authenticationService.login(request)) ;
-//    }
-
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) throws UserMissingException, InvalidInputException {
         return authenticationService.login(request) ;
+    }
+
+    @PostMapping("/resetPassword")
+    public String resetPassword(@RequestHeader String email) throws UserMissingException {
+        return authenticationService.resetPassword(email);
     }
 }
