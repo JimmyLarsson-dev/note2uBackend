@@ -153,13 +153,14 @@ public class VerifyUserInput {
         return userRepo.findById(UUID.fromString(request.getCallingUserId())).get();
     }
 
-    public void checkIfAlreadyRegistered(RegisterRequest request) {
+    public String checkIfAlreadyRegistered(RegisterRequest request) {
         if (userRepo.findByEmail(request.getEmail()).isPresent()) {
-            throw new UserAlreadyRegisteredException("Email already registered");
+            return "email already in use";
         }
         if (userRepo.findByUsername(request.getUsername()).isPresent()) {
-            throw new UserNameAlreadyExistsException("Username already registered");
+            return "Username already registered";
         }
+        return "ok";
     }
 
     public void verifyThatRecipientAndQueryMatch(DeclineNoteRequest request) {

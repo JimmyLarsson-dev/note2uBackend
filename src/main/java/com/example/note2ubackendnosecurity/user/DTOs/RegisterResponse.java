@@ -10,6 +10,7 @@ import lombok.Data;
 public class RegisterResponse {
 
     private String id;
+    private String userStatus;
     private String token;
     private String username;
     private String email;

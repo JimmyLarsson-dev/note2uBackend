@@ -11,11 +11,9 @@ import javax.security.auth.login.CredentialException;
 public class UserController {
 
     private final UserService service;
-
     public UserController(UserService service) {
         this.service = service;
     }
-
 
     @PostMapping("/blockUser")
     public String blockUser(@RequestBody BlockRequest request) throws UserMissingException {
@@ -26,7 +24,4 @@ public class UserController {
     public String unblockUser(@RequestBody BlockRequest request) throws UserMissingException {
         return service.unblockUser(request);
     }
-
-
-
 }

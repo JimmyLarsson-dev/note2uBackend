@@ -8,13 +8,11 @@ import org.springframework.stereotype.Service;
 public class WelcomeNote {
 
     public String getWelcomeLable(String language) {
-
         if (language.equals("swedish")) {
             return "Välkommen";
         }
         return "Welcome";
     }
-
     public String getWelcomeContent(String language) {
         if (language.equals("swedish")) {
             return "Information om appen på svenska";

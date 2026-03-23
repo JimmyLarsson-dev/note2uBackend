@@ -13,16 +13,16 @@ import java.util.stream.Collectors;
 @Service
 public class EntityToDtoConverter {
 
-    public List<GetNoteResponse> getNoteResponseListFromUserId(Optional<UserEntity> optionalUser) {
+    public List<GetNoteResponse> getNoteResponseListFromUserId(UserEntity user) {
         List<GetNoteResponse> dtoList = new ArrayList<>();
-        if (!optionalUser.get().getNotes().isEmpty()) {
-            for (int i = 0; i < optionalUser.get().getNotes().size(); i++) {
+        if (!user.getNotes().isEmpty()) {
+            for (int i = 0; i < user.getNotes().size(); i++) {
                 dtoList.add(new GetNoteResponse(
-                        optionalUser.get().getNotes().get(i).getId().toString(),
-                        optionalUser.get().getNotes().get(i).getTitle(),
-                        optionalUser.get().getNotes().get(i).getContent(),
-                        optionalUser.get().getNotes().get(i).getUsers().stream().map(x -> x.getId()).collect(Collectors.toList()),
-                        optionalUser.get().getNotes().get(i).isStatusBeenViewed()
+                        user.getNotes().get(i).getId().toString(),
+                        user.getNotes().get(i).getTitle(),
+                        user.getNotes().get(i).getContent(),
+                        user.getNotes().get(i).getUsers().stream().map(x -> x.getId()).collect(Collectors.toList()),
+                        user.getNotes().get(i).isStatusBeenViewed()
                 ));
             }
         }

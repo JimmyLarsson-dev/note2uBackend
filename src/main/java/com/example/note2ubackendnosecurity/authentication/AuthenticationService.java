@@ -22,6 +22,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -38,7 +39,16 @@ public class AuthenticationService {
 
     public RegisterResponse register(RegisterRequest request) {
 
-        verifyUserInput.checkIfAlreadyRegistered(request);
+        String userStatus = verifyUserInput.checkIfAlreadyRegistered(request);
+        if (!Objects.equals(userStatus, "ok")) {
+            return RegisterResponse.builder()
+                    .id("")
+                    .username("")
+                    .token("")
+                    .email("")
+                    .userStatus(userStatus)
+                    .build();
+        }
         UserEntity user = UserEntity.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -61,10 +71,19 @@ public class AuthenticationService {
         saveUserToken(user, jwt);
         return RegisterResponse.builder()
                 .id(String.valueOf(user.getId()))
-                .token(jwt)
+                .token(Objects.equals(userStatus, "ok") ? jwt : "")
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .userStatus(userStatus)
                 .build();
+
+//                return new RegisterResponse(
+//                    "1",
+//                    userStatus,
+//                    "token",
+//                    "username",
+//                    "email"
+//                );
     }
 
     private void saveUserToken(UserEntity user, String jwt) {

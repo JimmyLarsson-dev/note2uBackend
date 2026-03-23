@@ -2,7 +2,6 @@ package com.example.note2ubackendnosecurity.authentication;
 
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import jakarta.persistence.*;
-
 import java.util.Date;
 import java.util.UUID;
 

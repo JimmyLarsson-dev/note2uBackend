@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/auth")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
@@ -27,6 +28,10 @@ public class AuthenticationController {
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) throws UserMissingException, InvalidInputException {
         return authenticationService.login(request) ;
+    }
+    @GetMapping("/login/test")
+    public String test(@RequestBody String test) {
+        return test + " ok!";
     }
 
     @PostMapping("/resetPassword")

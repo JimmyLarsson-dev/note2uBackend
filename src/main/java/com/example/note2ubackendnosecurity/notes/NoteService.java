@@ -79,8 +79,8 @@ public class NoteService {
 
     public List<GetNoteResponse> getAllMyNotes(String userId) throws UserMissingException {
         verifyUserInput.verifyIfUserExists(userId);
-        Optional<UserEntity> optionalUser = userRepo.findById(UUID.fromString(userId));
-        return entityToDtoConverter.getNoteResponseListFromUserId(optionalUser);
+        UserEntity user = userRepo.findById(UUID.fromString(userId)).get();
+        return entityToDtoConverter.getNoteResponseListFromUserId(user);
     }
 
     public String inviteUser(InvitationRequest request) throws UserMissingException, NoteMissingException {

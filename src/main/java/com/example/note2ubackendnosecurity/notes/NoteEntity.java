@@ -26,7 +26,11 @@ public class NoteEntity {
 
     @ManyToMany
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "userId")
+    @JoinTable(
+            name = "notes_users",
+            joinColumns = @JoinColumn(name = "note_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private List<UserEntity> users;
 
     public NoteEntity(String title, String content, Boolean statusBeenViewed, List<UserEntity> users) {

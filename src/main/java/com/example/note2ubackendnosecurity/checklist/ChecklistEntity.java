@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,13 +21,21 @@ public class ChecklistEntity {
     private String title;
 
     @ManyToMany
-    @JoinColumn(name = "item_id")
+    @JoinTable(
+            name = "checklist_item",
+            joinColumns = @JoinColumn(name = "checklist_id"),
+            inverseJoinColumns = @JoinColumn(name = "item_id")
+    )
     @Cascade({CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
     private List<Item> itemList;
 
     @ManyToMany
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "userId")
+    @JoinTable(
+            name = "checklist_user",
+            joinColumns = @JoinColumn(name = "checklist_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private List<UserEntity> users;
 
     @OneToOne
