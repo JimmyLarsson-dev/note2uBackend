@@ -111,11 +111,10 @@ public class AuthenticationService {
     }
 
     public String resetPassword(String email) throws UserMissingException {
-
-//        verifyUserInput.verifyEmailExists(email);
+        verifyUserInput.verifyEmailExists(email);
         String resetToken = UUID.randomUUID().toString();
         MailService mailService = new MailService(new JavaMailSenderImpl());
         mailService.sendMail(email, "reset token", resetToken);
         return resetToken;
-    };
+    }
 }

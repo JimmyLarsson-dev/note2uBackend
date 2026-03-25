@@ -23,8 +23,6 @@ public class MailService {
         message.setText(body);
         message.setSubject(subject);
         javaMailSender.send(message);
-
-
     }
 
 }
