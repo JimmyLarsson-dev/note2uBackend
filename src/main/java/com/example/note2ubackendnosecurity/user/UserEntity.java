@@ -4,8 +4,8 @@ import com.example.note2ubackendnosecurity.checklist.ChecklistEntity;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
+//import org.hibernate.annotations.Cascade;
+//import org.hibernate.annotations.CascadeType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
@@ -31,11 +31,11 @@ public class UserEntity implements UserDetails {
     private String password;
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
-    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
+//    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     private List<NoteEntity> notes;
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
-    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
+//    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     private List<ChecklistEntity> checkLists;
 
     private String language;

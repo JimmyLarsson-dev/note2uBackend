@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,12 +38,22 @@ public class JwtService {
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts
                 .builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() +  1000*60*60))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .claims()
+                .add(extraClaims)
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .and()
+                .signWith(getSignInKey(), Jwts.SIG.HS256)
                 .compact();
+
+//                .builder()
+//                .setClaims(extraClaims)
+//                .setSubject(userDetails.getUsername())
+//                .setIssuedAt(new Date(System.currentTimeMillis()))
+//                .setExpiration(new Date(System.currentTimeMillis() +  1000*60*60))
+//                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+//                .compact();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -57,18 +68,27 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
+                .parser()
+                .verifyWith(getSignInKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
+
+//                .parserBuilder()
+//                .setSigningKey(getSignInKey())
+//                .build()
+//                .parseClaimsJws(token)
+//                .getBody();
     }
 
-    public Key getSignInKey() {
-//        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-//        return Keys.hmacShaKeyFor(keyBytes);
-        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    public SecretKey getSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
+//        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 //        String base64Key = Encoders.BASE64.encode(key.getEncoded());
-        return key;
+//        return key;
+//        return Keys.secretKeyFor(SignatureAlgorithm.HS256);
+//        return Jwts.SIG.HS256.key().build();
+
     }
 }

@@ -3,8 +3,8 @@ package com.example.note2ubackendnosecurity.notes;
 import com.example.note2ubackendnosecurity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
+//import org.hibernate.annotations.Cascade;
+//import org.hibernate.annotations.CascadeType;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +25,7 @@ public class NoteEntity {
     private boolean statusBeenViewed;
 
     @ManyToMany
-    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
+//    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "notes_users",
             joinColumns = @JoinColumn(name = "note_id"),
