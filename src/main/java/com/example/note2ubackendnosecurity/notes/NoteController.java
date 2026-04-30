@@ -3,7 +3,11 @@ package com.example.note2ubackendnosecurity.notes;
 import com.example.note2ubackendnosecurity.exceptions.NoteAccessMissingException;
 import com.example.note2ubackendnosecurity.exceptions.NoteMissingException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
+import com.example.note2ubackendnosecurity.mail.EmailDetails;
+import com.example.note2ubackendnosecurity.mail.EmailServiceImpl;
 import com.example.note2ubackendnosecurity.notes.DTOs.*;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -13,9 +17,20 @@ import java.util.List;
 public class NoteController {
 
     NoteService noteService;
+    EmailServiceImpl emailService = new EmailServiceImpl(new JavaMailSenderImpl() {
+    });
+
 
     public NoteController(NoteService noteService) {
         this.noteService = noteService;
+    }
+
+
+    //TODO ta bort den här endpointen + EmailServiceImpl emailService ovan
+    @GetMapping("/testMail")
+    public void testMail() {
+        EmailDetails emailDetails = new EmailDetails("jimmy.larsson@europe.com", "Test", "Test", "");
+        emailService.sendMail(emailDetails);
     }
 
     @PostMapping("/createNote")

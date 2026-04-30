@@ -3,7 +3,10 @@ package com.example.note2ubackendnosecurity.authentication;
 import com.example.note2ubackendnosecurity.config.JwtService;
 import com.example.note2ubackendnosecurity.exceptions.InvalidInputException;
 import com.example.note2ubackendnosecurity.exceptions.UserMissingException;
-import com.example.note2ubackendnosecurity.mail.MailService;
+import com.example.note2ubackendnosecurity.mail.EmailDetails;
+import com.example.note2ubackendnosecurity.mail.EmailService;
+import com.example.note2ubackendnosecurity.mail.EmailServiceImpl;
+import com.example.note2ubackendnosecurity.mail.Mailer;
 import com.example.note2ubackendnosecurity.notes.NoteEntity;
 import com.example.note2ubackendnosecurity.notes.NoteRepo;
 import com.example.note2ubackendnosecurity.token.Token;
@@ -18,6 +21,7 @@ import com.example.note2ubackendnosecurity.utilities.LanguageService;
 import com.example.note2ubackendnosecurity.utilities.VerifyUserInput;
 import com.example.note2ubackendnosecurity.utilities.WelcomeNote;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,6 +40,7 @@ public class AuthenticationService {
     private final LanguageService languageService;
     private final WelcomeNote welcomeNote;
     private final NoteRepo noteRepo;
+
 
     public RegisterResponse register(RegisterRequest request) {
 
@@ -112,9 +117,8 @@ public class AuthenticationService {
 
     public String resetPassword(String email) throws UserMissingException {
         verifyUserInput.verifyEmailExists(email);
-        String resetToken = UUID.randomUUID().toString();
-        MailService mailService = new MailService(new JavaMailSenderImpl());
-        mailService.sendMail(email, "reset token", resetToken);
-        return resetToken;
+        Mailer mailer = new Mailer();
+        return mailer.sendEmail(email);
+
     }
 }
